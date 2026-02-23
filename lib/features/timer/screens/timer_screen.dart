@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../shared/widgets/svg_icon.dart';
 import '../../../core/constants/app_durations.dart';
 import '../../../data/models/emotion_type.dart';
 import '../../../shared/widgets/gradient_background.dart';
@@ -130,14 +132,14 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
         body: GradientBackground(
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 48),
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
 
                   // 헤더
                   _buildHeader(timerState),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 80),
 
                   // 작업 정보
                   if (widget.taskDescription != null)
@@ -168,7 +170,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
 
                   // 컨트롤 버튼
                   _buildControls(timerState),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
@@ -184,23 +186,23 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
       children: [
         // 감정 표시
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           decoration: BoxDecoration(
             color: widget.emotion.color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(40),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 widget.emotion.emoji,
-                style: const TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 40),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 16),
               Text(
                 widget.emotion.label(context),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 28,
                   fontWeight: FontWeight.w600,
                   color: widget.emotion.color,
                 ),
@@ -219,7 +221,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
             AppStrings.giveUpButton(context),
             style: const TextStyle(
               color: AppColors.textMuted,
-              fontSize: 14,
+              fontSize: 28,
             ),
           ),
         )
@@ -232,26 +234,26 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
   Widget _buildTaskInfo() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(32),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: widget.emotion.color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(24),
             ),
             child: Icon(
               Icons.task_alt,
               color: widget.emotion.color,
-              size: 20,
+              size: 40,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 24),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,15 +263,15 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
                       ? '현재 작업'
                       : 'Current task',
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 24,
                     color: AppColors.textMuted,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Text(
                   widget.taskDescription!,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 32,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
@@ -290,29 +292,25 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
         GestureDetector(
           onTap: _togglePause,
           child: Container(
-            width: 80,
-            height: 80,
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: timerState.isPaused
-                  ? AppColors.primaryGradient
-                  : null,
-              color: timerState.isPaused ? null : AppColors.surface,
+              color: timerState.isPaused
+                  ? AppColors.accent
+                  : AppColors.surface,
               boxShadow: [
                 BoxShadow(
-                  color: (timerState.isPaused
-                          ? AppColors.primary
-                          : Colors.black)
-                      .withValues(alpha: 0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
-            child: Icon(
-              timerState.isPaused ? Icons.play_arrow : Icons.pause,
-              size: 40,
-              color: Colors.white,
+            child: SvgIcon(
+              assetPath: timerState.isPaused ? AppAssets.iconPlay : AppAssets.iconPause,
+              size: 36,
+              color: timerState.isPaused ? Colors.white : AppColors.textPrimary,
             ),
           ),
         )

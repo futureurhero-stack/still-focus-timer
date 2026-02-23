@@ -6,22 +6,22 @@ import '../constants/app_colors.dart';
 class AppTheme {
   AppTheme._();
 
-  /// 다크 테마 (기본)
-  static ThemeData get darkTheme {
+  /// 라이트 테마 (프리미엄 베이지)
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       
       // 색상 스키마
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.primary,
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.accent,
         onPrimary: AppColors.textPrimary,
-        secondary: AppColors.secondary,
+        secondary: AppColors.primary,
         onSecondary: AppColors.textPrimary,
         surface: AppColors.surface,
         onSurface: AppColors.textPrimary,
         error: AppColors.error,
-        onError: AppColors.textPrimary,
+        onError: Colors.white,
       ),
 
       // 스캐폴드 배경색
@@ -34,11 +34,11 @@ class AppTheme {
         centerTitle: true,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
         ),
         titleTextStyle: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 20,
+          fontSize: 40,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
@@ -49,100 +49,100 @@ class AppTheme {
 
       // 텍스트 테마
       textTheme: const TextTheme(
-        // 대형 제목
+        // 대형 제목 (타이머 숫자용 - Bold만)
         displayLarge: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 48,
-          fontWeight: FontWeight.w700,
+          fontSize: 112,
+          fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
-          letterSpacing: -1,
+          letterSpacing: -2,
         ),
         displayMedium: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 36,
-          fontWeight: FontWeight.w700,
+          fontSize: 72,
+          fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
-          letterSpacing: -0.5,
+          letterSpacing: -1,
         ),
         displaySmall: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 28,
-          fontWeight: FontWeight.w600,
+          fontSize: 56,
+          fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
-        // 헤드라인
+        // 헤드라인 (Regular~Medium)
         headlineLarge: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontSize: 48,
+          fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
         headlineMedium: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontSize: 40,
+          fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
         headlineSmall: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontSize: 36,
+          fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
         ),
-        // 타이틀
+        // 타이틀 (Regular~Medium)
         titleLarge: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontSize: 32,
+          fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
         titleMedium: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontSize: 28,
+          fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
         ),
         titleSmall: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+          fontSize: 24,
+          fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
         ),
         // 본문
         bodyLarge: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 16,
+          fontSize: 32,
           fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
         ),
         bodyMedium: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 14,
+          fontSize: 28,
           fontWeight: FontWeight.w400,
           color: AppColors.textSecondary,
         ),
         bodySmall: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 12,
+          fontSize: 24,
           fontWeight: FontWeight.w400,
           color: AppColors.textMuted,
         ),
         // 레이블
         labelLarge: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 14,
+          fontSize: 28,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
         labelMedium: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 12,
+          fontSize: 24,
           fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
         labelSmall: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 10,
+          fontSize: 20,
           fontWeight: FontWeight.w500,
           color: AppColors.textMuted,
         ),
@@ -153,7 +153,7 @@ class AppTheme {
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(32),
         ),
       ),
 
@@ -163,13 +163,13 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.textPrimary,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(32),
           ),
           textStyle: const TextStyle(
             fontFamily: 'Pretendard',
-            fontSize: 16,
+            fontSize: 32,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -180,7 +180,7 @@ class AppTheme {
           foregroundColor: AppColors.primary,
           textStyle: const TextStyle(
             fontFamily: 'Pretendard',
-            fontSize: 14,
+            fontSize: 28,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -190,13 +190,13 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.textPrimary,
           side: const BorderSide(color: AppColors.surfaceLight),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(32),
           ),
           textStyle: const TextStyle(
             fontFamily: 'Pretendard',
-            fontSize: 16,
+            fontSize: 32,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -210,22 +210,22 @@ class AppTheme {
           color: AppColors.textMuted,
           fontFamily: 'Pretendard',
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppColors.primary, width: 4),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error, width: 2),
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppColors.error, width: 4),
         ),
       ),
 
@@ -242,7 +242,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(40),
         ),
       ),
 
@@ -254,7 +254,7 @@ class AppTheme {
           fontFamily: 'Pretendard',
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(24),
         ),
         behavior: SnackBarBehavior.floating,
       ),
@@ -262,7 +262,7 @@ class AppTheme {
       // 아이콘 테마
       iconTheme: const IconThemeData(
         color: AppColors.textPrimary,
-        size: 24,
+        size: 48,
       ),
 
       // 디바이더 테마

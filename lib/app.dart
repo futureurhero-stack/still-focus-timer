@@ -78,7 +78,7 @@ class FocusFlowApp extends ConsumerWidget {
     return MaterialApp.router(
       title: AppStrings.appName(context),
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
       // 현재 선택된 언어 (기본: 영어)
       locale: locale,
       // 지원하는 언어 목록

@@ -3,21 +3,25 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../shared/widgets/gradient_background.dart';
+import '../../../shared/widgets/svg_icon.dart';
 import '../../../core/constants/app_durations.dart';
 import '../../../core/locale/locale_provider.dart';
+import '../../../core/providers/default_duration_provider.dart';
 import '../../../data/local/database_service.dart';
 
 /// 설정 화면
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _db = DatabaseService();
   int _defaultDuration = 10;
   bool _notificationsEnabled = true;
@@ -39,7 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _saveDuration(int duration) async {
-    await _db.setSetting('defaultDuration', duration);
+    await ref.read(defaultDurationProvider.notifier).updateDuration(duration);
     setState(() => _defaultDuration = duration);
   }
 
@@ -88,142 +92,221 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios),
+      body: GradientBackground(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // AppBar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => context.pop(),
+                      icon: SvgIcon(
+                        assetPath: AppAssets.iconClose,
+                        size: 40,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        AppStrings.settingsTitle(context),
+                        style: const TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isCompact = constraints.maxWidth < 380;
+                    return ListView(
+                      padding: EdgeInsets.all(isCompact ? 20 : 28),
+                  children: [
+                    // 언어 설정
+                    _buildLanguageSection()
+                        .animate()
+                        .fadeIn(duration: AppDurations.animNormal)
+                        .slideY(begin: 0.1, end: 0),
+
+                    const SizedBox(height: 48),
+
+                    // Focus session defaults
+                    _buildSection(
+                      title: 'Session settings',
+                      children: [
+                        _buildDurationSetting(),
+                      ],
+                    )
+                    .animate()
+                    .fadeIn(duration: AppDurations.animNormal)
+                    .slideY(begin: 0.1, end: 0),
+
+                    const SizedBox(height: 48),
+
+                    // Notification settings
+                    _buildSection(
+                      title: 'Notifications',
+                      children: [
+                        _buildSwitchTile(
+                          iconPath: AppAssets.iconNotification,
+                          title: 'Enable notifications',
+                          subtitle: 'Get notified when a session ends',
+                          value: _notificationsEnabled,
+                          onChanged: _toggleNotifications,
+                        ),
+                      ],
+                    )
+                    .animate()
+                    .fadeIn(duration: AppDurations.animNormal, delay: 100.ms)
+                    .slideY(begin: 0.1, end: 0),
+
+                    const SizedBox(height: 48),
+
+                    // App info
+                    _buildSection(
+                      title: 'About',
+                      children: [
+                        _buildInfoTile(
+                          iconPath: AppAssets.iconStar,
+                          title: 'Version',
+                          value: '2.0.0',
+                        ),
+                        _buildInfoTile(
+                          iconPath: AppAssets.iconCrown,
+                          title: 'Developer',
+                          value: 'FocusFlow Team',
+                        ),
+                      ],
+                    )
+                    .animate()
+                    .fadeIn(duration: AppDurations.animNormal, delay: 200.ms)
+                    .slideY(begin: 0.1, end: 0),
+
+                    const SizedBox(height: 48),
+
+                    // Data management
+                    _buildSection(
+                      title: 'Data management',
+                      children: [
+                        _buildActionTile(
+                          iconPath: AppAssets.iconReset,
+                          title: 'Delete all data',
+                          subtitle: 'Remove all session history and settings',
+                          isDestructive: true,
+                          onTap: _clearAllData,
+                        ),
+                      ],
+                    )
+                    .animate()
+                    .fadeIn(duration: AppDurations.animNormal, delay: 300.ms)
+                    .slideY(begin: 0.1, end: 0),
+                  ],
+                );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-        title: Text(AppStrings.settingsTitle(context)),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          // 언어 설정
-          _buildLanguageSection()
-              .animate()
-              .fadeIn(duration: AppDurations.animNormal)
-              .slideY(begin: 0.1, end: 0),
-
-          const SizedBox(height: 24),
-
-          // Focus session defaults
-          _buildSection(
-            title: 'Session settings',
-            children: [
-              _buildDurationSetting(),
-            ],
-          )
-              .animate()
-              .fadeIn(duration: AppDurations.animNormal)
-              .slideY(begin: 0.1, end: 0),
-
-          const SizedBox(height: 24),
-
-          // Notification settings
-          _buildSection(
-            title: 'Notifications',
-            children: [
-              _buildSwitchTile(
-                icon: Icons.notifications_outlined,
-                title: 'Enable notifications',
-                subtitle: 'Get notified when a session ends',
-                value: _notificationsEnabled,
-                onChanged: _toggleNotifications,
-              ),
-            ],
-          )
-              .animate()
-              .fadeIn(duration: AppDurations.animNormal, delay: 100.ms)
-              .slideY(begin: 0.1, end: 0),
-
-          const SizedBox(height: 24),
-
-          // App info
-          _buildSection(
-            title: 'About',
-            children: [
-              _buildInfoTile(
-                icon: Icons.info_outline,
-                title: 'Version',
-                value: '1.0.0',
-              ),
-              _buildInfoTile(
-                icon: Icons.code,
-                title: 'Developer',
-                value: 'FocusFlow Team',
-              ),
-            ],
-          )
-              .animate()
-              .fadeIn(duration: AppDurations.animNormal, delay: 200.ms)
-              .slideY(begin: 0.1, end: 0),
-
-          const SizedBox(height: 24),
-
-          // Data management
-          _buildSection(
-            title: 'Data management',
-            children: [
-              _buildActionTile(
-                icon: Icons.delete_outline,
-                title: 'Delete all data',
-                subtitle: 'Remove all session history and settings',
-                isDestructive: true,
-                onTap: _clearAllData,
-              ),
-            ],
-          )
-              .animate()
-              .fadeIn(duration: AppDurations.animNormal, delay: 300.ms)
-              .slideY(begin: 0.1, end: 0),
-        ],
       ),
     );
   }
 
-  /// Language section (English / Korean switch)
+  /// Language section (English / Korean 슬라이드 스타일)
   Widget _buildLanguageSection() {
     return Consumer(
       builder: (context, ref, _) {
         final locale = ref.watch(localeProvider);
-        final currentLanguage = locale.languageCode;
+        final isKorean = locale.languageCode == 'ko';
 
         return _buildSection(
-          title: 'Language',
+          title: AppStrings.settingsLanguage(context),
           children: [
-            ListTile(
-              title: const Text('English'),
-              trailing: currentLanguage == 'en'
-                  ? const Icon(
-                      Icons.check_circle,
-                      color: AppColors.primary,
-                    )
-                  : const Icon(
-                      Icons.radio_button_unchecked,
-                      color: AppColors.textMuted,
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceLight,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.surfaceLight, width: 1),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => ref.read(localeProvider.notifier).setEnglish(),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: !isKorean ? AppColors.accent : Colors.transparent,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: !isKorean
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.accent.withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Text(
+                            'English',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: !isKorean ? Colors.white : AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-              onTap: () {
-                ref.read(localeProvider.notifier).setEnglish();
-              },
-            ),
-            const Divider(height: 1),
-            ListTile(
-              title: const Text('Korean'),
-              trailing: currentLanguage == 'ko'
-                  ? const Icon(
-                      Icons.check_circle,
-                      color: AppColors.primary,
-                    )
-                  : const Icon(
-                      Icons.radio_button_unchecked,
-                      color: AppColors.textMuted,
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => ref.read(localeProvider.notifier).setKorean(),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: isKorean ? AppColors.accent : Colors.transparent,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: isKorean
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.accent.withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Text(
+                            '한국어',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: isKorean ? Colors.white : AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-              onTap: () {
-                ref.read(localeProvider.notifier).setKorean();
-              },
+                  ],
+                ),
+              ),
             ),
           ],
         );
@@ -239,11 +322,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          padding: const EdgeInsets.only(left: 8, bottom: 24),
           child: Text(
             title,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 28,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
             ),
@@ -252,7 +335,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(32),
           ),
           child: Column(
             children: children,
@@ -263,68 +346,79 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildDurationSetting() {
+    final isCompact = MediaQuery.of(context).size.width < 380;
+    final padding = isCompact ? 20.0 : 28.0;
+    final titleSize = isCompact ? 24.0 : 28.0;
+    final subtitleSize = isCompact ? 18.0 : 22.0;
+
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(isCompact ? 12 : 16),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppColors.accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(
-                  Icons.timer_outlined,
-                  color: AppColors.primary,
-                  size: 20,
+                child: SvgIcon(
+                  assetPath: AppAssets.iconFocus,
+                  size: isCompact ? 28 : 36,
+                  color: AppColors.accent,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: isCompact ? 16 : 20),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       AppStrings.defaultDuration(context),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                      style: TextStyle(
+                        fontSize: titleSize,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
+                    const SizedBox(height: 4),
                     Text(
-                      Localizations.localeOf(context).languageCode == 'ko'
-                          ? '기본 집중 세션 시간'
-                          : 'Default focus session length',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textMuted,
+                      AppStrings.defaultSessionSubtitle(context),
+                      style: TextStyle(
+                        fontSize: subtitleSize,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w400,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 12),
               Text(
                 '$_defaultDuration min',
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: isCompact ? 24 : 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: AppColors.accent,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
           // 슬라이더
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              activeTrackColor: AppColors.primary,
+              activeTrackColor: AppColors.accent,
               inactiveTrackColor: AppColors.surfaceLight,
-              thumbColor: AppColors.primary,
-              overlayColor: AppColors.primary.withValues(alpha: 0.2),
+              thumbColor: AppColors.accent,
+              overlayColor: AppColors.accent.withValues(alpha: 0.2),
               trackHeight: 6,
             ),
             child: Slider(
@@ -341,36 +435,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           // 시간 옵션
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: isCompact ? 8 : 12,
+            runSpacing: 8,
             children: [5, 10, 15, 25, 40, 60].map((duration) {
               final isSelected = _defaultDuration == duration;
               return GestureDetector(
                 onTap: () => _saveDuration(duration),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isCompact ? 10 : 12,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? AppColors.primary.withValues(alpha: 0.2)
+                        ? AppColors.accent.withValues(alpha: 0.2)
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
-                          ? AppColors.primary
+                          ? AppColors.accent
                           : AppColors.surfaceLight,
                     ),
                   ),
                   child: Text(
                     '$duration',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: isCompact ? 18 : 22,
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.normal,
                       color: isSelected
-                          ? AppColors.primary
+                          ? AppColors.accent
                           : AppColors.textMuted,
                     ),
                   ),
@@ -384,47 +479,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSwitchTile({
-    required IconData icon,
+    required String iconPath,
     required String title,
     required String subtitle,
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
+    final isCompact = MediaQuery.of(context).size.width < 380;
+    final padding = isCompact ? 20.0 : 28.0;
+
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(padding),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(isCompact ? 8 : 10),
             decoration: BoxDecoration(
-              color: AppColors.info.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              color: AppColors.accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icon,
-              color: AppColors.info,
-              size: 20,
+            child: SvgIcon(
+              assetPath: iconPath,
+              size: isCompact ? 28 : 36,
+              color: AppColors.accent,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: isCompact ? 12 : 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: isCompact ? 18 : 20,
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
                   ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
+                const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: TextStyle(
+                    fontSize: isCompact ? 16 : 18,
                     color: AppColors.textMuted,
                   ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ],
             ),
@@ -432,7 +535,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: AppColors.primary,
+            activeTrackColor: AppColors.accent.withValues(alpha: 0.5),
+            activeThumbColor: AppColors.accent,
           ),
         ],
       ),
@@ -440,42 +544,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildInfoTile({
-    required IconData icon,
+    required String iconPath,
     required String title,
     required String value,
   }) {
+    final isCompact = MediaQuery.of(context).size.width < 380;
+    final padding = isCompact ? 20.0 : 28.0;
+
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(padding),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(isCompact ? 8 : 10),
             decoration: BoxDecoration(
-              color: AppColors.secondary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              color: AppColors.accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icon,
-              color: AppColors.secondary,
-              size: 20,
+            child: SvgIcon(
+              assetPath: iconPath,
+              size: isCompact ? 28 : 36,
+              color: AppColors.accent,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: isCompact ? 12 : 16),
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
-                fontSize: 16,
+              style: TextStyle(
+                fontSize: isCompact ? 18 : 20,
                 fontWeight: FontWeight.w500,
                 color: AppColors.textPrimary,
               ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
+          Flexible(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: isCompact ? 20 : 24,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              textAlign: TextAlign.end,
             ),
           ),
         ],
@@ -484,34 +599,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildActionTile({
-    required IconData icon,
+    required String iconPath,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
     bool isDestructive = false,
   }) {
     final color = isDestructive ? AppColors.error : AppColors.textPrimary;
+    final isCompact = MediaQuery.of(context).size.width < 380;
+    final padding = isCompact ? 20.0 : 28.0;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(padding),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(isCompact ? 8 : 10),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
+              child: SvgIcon(
+                assetPath: iconPath,
+                size: isCompact ? 28 : 36,
                 color: color,
-                size: 20,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: isCompact ? 12 : 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,17 +636,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: isCompact ? 18 : 20,
                       fontWeight: FontWeight.w500,
                       color: color,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: TextStyle(
+                      fontSize: isCompact ? 16 : 18,
                       color: AppColors.textMuted,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ],
               ),

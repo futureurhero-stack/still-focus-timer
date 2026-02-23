@@ -1,6 +1,6 @@
-# 🎯 FocusFlow – 행동 기반 포모도로 코치
+# Still: Focus Timer
 
-> 시간을 재는 앱이 아니라, 사용자가 "집중 행동을 시작하고, 완료하고, 스스로를 이해하게 만드는 앱"
+> 산뜻하고 깔끔한 집중 타이머 앱 – 감정 기반 포모도로로 하루를 이어가세요
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.10+-02569B?logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?logo=dart)
@@ -8,52 +8,36 @@
 
 ## 📱 주요 기능
 
-### ✨ Instant Start System
+### 🏠 홈 화면
 
-- **감정 기반 세션 설정**: 현재 기분에 따라 최적의 세션 시간 자동 추천
-- **10초 내 시작**: "지금 10분만 시작하기" 버튼으로 빠른 시작
-- **4가지 감정 모드**:
-  - 😫 하기 싫음 → 5~10분 미니 세션
-  - 😰 스트레스 → 부담 완화 모드
-  - 😴 졸림 → 15분 + 움직임 알림
-  - 😃 괜찮음 → 25~40분 딥워크
+- **감정 기반 세션 시작**: "How are you feeling now?" – 4가지 기분 카드로 세션 시간 추천
+- **Quick Start**: 기본 설정 시간으로 즉시 시작
+- **오늘 집중 시간 & 연속 기록**: 한눈에 보는 집중 현황
 
-### ⏱️ Task-Based Pomodoro Timer
+### ⏱️ 포커스 타이머
 
 - 작업 단위 중심의 세션 관리
-- 아름다운 원형 프로그레스 타이머
-- 일시정지/재개 기능
-- 백그라운드 타이머 지원
+- 원형 프로그레스 타이머 (산뜻한 미니멀 스타일)
+- 일시정지/재개, 백그라운드 타이머 지원
 
-### 💪 Failure-Friendly Logging
-
-- 포기해도 기록되고 분석됨
-- 중단 이유 선택 (피곤함, 집중 안됨, 급한 일, 기타)
-- 죄책감 없는 생산성 관리
-
-### 📝 10초 회고 (Post-Session Reflection)
+### 📝 세션 회고
 
 - 세션 완료 후 간단한 성과 기록
 - 최근 작업 자동 추천
-- 활동 데이터 자동 분류
+- 포기해도 기록 – 중단 이유 선택 (피곤함, 집중 안됨, 급한 일 등)
 
-### 👀 Distraction Detection
-
-- 앱 백그라운드 전환 감지
-- 복귀 유도 알림
-- 집중 이탈 횟수 기록
-
-### 📖 Daily Focus Story
-
-- 하루 집중 기록을 스토리 형태로 제공
-- 개인화된 피드백 메시지
-- 공유 가능한 리포트
-
-### 📊 Focus Pattern Analytics
+### 📊 집중 통계 (Analytics)
 
 - 주간/월간 통계 차트
 - 시간대별 집중 패턴 분석
-- 최적 집중 시간대 추천
+- Daily Focus Story – 하루 기록 스토리 형태 제공
+
+### ⚙️ 설정
+
+- 한국어/영어 전환 (슬라이드 스타일)
+- 기본 세션 길이 설정 (5~60분)
+- 알림 설정
+- 사용자 데이터 백업 지원 (앱 업데이트 후 유지)
 
 ## 🛠️ 기술 스택
 
@@ -64,6 +48,8 @@
 - **Charts**: fl_chart
 - **Animations**: flutter_animate
 - **Notifications**: flutter_local_notifications
+- **SVG Icons**: flutter_svg
+- **Localization**: intl, flutter_localizations (EN/KR)
 
 ## 📁 프로젝트 구조
 
@@ -72,26 +58,25 @@ lib/
 ├── main.dart                 # 앱 진입점
 ├── app.dart                  # 라우팅 설정
 │
-├── core/                     # 핵심 유틸리티
-│   ├── constants/            # 상수 (색상, 문자열, 시간)
-│   ├── theme/                # 테마 설정
-│   └── utils/                # 유틸리티 함수
+├── core/                     # 핵심 설정
+│   ├── constants/            # 상수 (색상, 문자열, 에셋)
+│   ├── theme/                # Material 3 테마
+│   ├── providers/            # Riverpod 프로바이더
+│   └── locale/               # 로케일 설정
 │
 ├── data/                     # 데이터 레이어
 │   ├── models/               # 데이터 모델
-│   ├── repositories/         # Repository 패턴
-│   └── local/                # 로컬 DB 서비스
+│   └── local/                # DatabaseService (SharedPreferences)
 │
 ├── features/                 # 기능별 모듈
-│   ├── home/                 # 홈 화면
-│   ├── timer/                # 타이머
-│   ├── reflection/           # 회고
+│   ├── home/                 # 홈 (감정 선택, Quick Start)
+│   ├── timer/                # 타이머 화면
+│   ├── reflection/           # 세션 회고
 │   ├── analytics/            # 통계
 │   └── settings/             # 설정
 │
 └── shared/                   # 공유 컴포넌트
-    ├── widgets/              # 공통 위젯
-    └── services/             # 공통 서비스
+    └── widgets/              # MoodCard, GradientButton, SvgIcon 등
 ```
 
 ## 🚀 시작하기
@@ -105,7 +90,7 @@ lib/
 
 ```bash
 # 저장소 클론
-git clone <repository-url>
+git clone https://github.com/futureurhero-stack/still-focus-timer.git
 cd momo
 
 # 의존성 설치
@@ -121,47 +106,36 @@ flutter run
 # Android APK
 flutter build apk
 
+# Android App Bundle (Play Store)
+flutter build appbundle --release
+
 # iOS
 flutter build ios
-
-# Web
-flutter build web
 ```
 
 ## 🎨 디자인 시스템
 
+### 스타일
+
+- **Material 3** 기반
+- **Soft Neumorphism** – 부드러운 그림자와 라운드 카드 (28–32 radius)
+- **산뜻하고 깔끔한** 미니멀 UI
+- **Liquid Glass** – 타이머·카드에 가벼운 글래스 효과
+
 ### 색상 팔레트
 
-- **Primary**: `#FF6B35` (딥 오렌지) - 에너지와 집중
-- **Secondary**: `#4A3F6B` (딥 퍼플) - 차분함
-- **Background**: `#1A1625` (다크) - 눈의 피로 감소
+| 용도 | 색상 | HEX |
+|------|------|-----|
+| Accent | 산뜻한 오렌지 | `#E87D54` |
+| Primary | 연한 베이지 | `#F5F0EB` |
+| Background | 밝은 배경 | `#F8F9FA` |
+| Text | 진한 회색 | `#2C2C2C` |
 
 ### 감정별 색상
 
-- 😫 하기 싫음: `#6C7CE0`
-- 😰 스트레스: `#E06C8A`
-- 😴 졸림: `#7CE0D3`
-- 😃 괜찮음: `#8AE06C`
-
-## 📊 성공 지표 (KPIs)
-
-| 지표              | 목표     |
-| ----------------- | -------- |
-| Day 7 Retention   | 40% 이상 |
-| 평균 일일 세션 수 | 3회 이상 |
-| 세션 완료율       | 65% 이상 |
-| 회고 입력률       | 50% 이상 |
-
-## 🗓️ 개발 로드맵
-
-- [x] Phase 0: 프로젝트 설정 및 기반 구축
-- [x] Phase 1: Instant Start System
-- [x] Phase 2: Task-Based Pomodoro Timer
-- [x] Phase 3: Post-Session Reflection
-- [x] Phase 4: Distraction Detection
-- [x] Phase 5: Daily Focus Story
-- [x] Phase 6: Focus Pattern Analytics
-- [x] Phase 7: 마무리 및 최적화
+- 😫 하기 싫음 / 😃 괜찮음: `#E87D54`
+- 😰 스트레스: `#F5A082`
+- 😴 졸림: `#D4C9BC`
 
 ## 📄 라이선스
 

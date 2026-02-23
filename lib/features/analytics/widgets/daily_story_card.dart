@@ -20,17 +20,17 @@ class DailyStoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(48),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
             AppColors.primary.withValues(alpha: 0.15),
-            AppColors.secondary.withValues(alpha: 0.15),
+            AppColors.accent.withValues(alpha: 0.15),
           ],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(48),
         border: Border.all(
           color: AppColors.primary.withValues(alpha: 0.2),
         ),
@@ -43,26 +43,26 @@ class DailyStoryCard extends StatelessWidget {
             children: [
               const Text(
                 '📖',
-                style: TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: 48),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 16),
               Text(
                 AppStrings.dailyStoryTitle(context),
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
 
           // 스토리 내용
           Text(
             _generateStory(context),
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 32,
               height: 1.6,
               color: AppColors.textSecondary,
             ),
@@ -70,7 +70,7 @@ class DailyStoryCard extends StatelessWidget {
 
           // 공유 버튼
           if (stats?.hasAnySession == true) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -78,7 +78,7 @@ class DailyStoryCard extends StatelessWidget {
                   onPressed: () => _shareStory(context),
                   icon: const Icon(
                     Icons.share_outlined,
-                    size: 18,
+                    size: 36,
                     color: AppColors.primary,
                   ),
                   label: Text(

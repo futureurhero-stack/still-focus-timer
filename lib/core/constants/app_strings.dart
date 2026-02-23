@@ -138,8 +138,12 @@ class AppStrings {
   // ===== Settings =====
   static String settingsTitle(BuildContext context) =>
       _isKorean(context) ? '설정' : 'Settings';
+  static String settingsLanguage(BuildContext context) =>
+      _isKorean(context) ? '언어' : 'Language';
   static String defaultDuration(BuildContext context) =>
       _isKorean(context) ? '기본 세션 시간' : 'Default session length';
+  static String defaultSessionSubtitle(BuildContext context) =>
+      _isKorean(context) ? '기본 집중 세션 시간' : 'Default focus session length';
   static String notifications(BuildContext context) =>
       _isKorean(context) ? '알림 설정' : 'Notifications';
   static String darkMode(BuildContext context) =>

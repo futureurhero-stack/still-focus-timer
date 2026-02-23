@@ -1,9 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <application
-        android:label="FocusFlow"
+        android:label="Still: Focus Timer"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules">
         <!-- androidx-startup 콘텐츠 제공자 충돌 해결 -->
         <provider
             android:name="androidx.startup.InitializationProvider"

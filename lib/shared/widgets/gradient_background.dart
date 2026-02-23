@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import 'app_background.dart';
 
-/// 그라디언트 배경 위젯
+/// 배경 위젯 - 이미지 배경 또는 그라디언트 폴백
 class GradientBackground extends StatelessWidget {
   final Widget child;
+  final bool useImageBackground;
 
   const GradientBackground({
     super.key,
     required this.child,
+    this.useImageBackground = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (useImageBackground) {
+      return AppBackground(
+        showDecoration: false,
+        child: child,
+      );
+    }
     return Container(
       decoration: const BoxDecoration(
         gradient: AppColors.backgroundGradient,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_durations.dart';
@@ -63,7 +64,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     // Header
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(48),
                         child: _buildHeader(),
                       ),
                     ),
@@ -71,7 +72,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     // Today's story
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: const EdgeInsets.symmetric(horizontal: 48),
                         child: DailyStoryCard(stats: _todayStats),
                       ),
                     ),
@@ -79,7 +80,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     // Statistic cards
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(48),
                         child: _buildStatsGrid(),
                       ),
                     ),
@@ -88,14 +89,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     if (_weekStats != null)
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: const EdgeInsets.symmetric(horizontal: 48),
                           child: WeeklyChart(stats: _weekStats!),
                         ),
                       ),
 
                     // Spacer
                     const SliverToBoxAdapter(
-                      child: SizedBox(height: 24),
+                      child: SizedBox(height: 48),
                     ),
                   ],
                 ),
@@ -115,12 +116,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 16),
         Expanded(
           child: Text(
             AppStrings.analyticsTitle(context),
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 48,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -140,7 +141,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           children: [
             Expanded(
               child: StatsCard(
-                icon: Icons.timer_outlined,
+                iconPath: AppAssets.iconFocus,
                 label: 'Today\'s focus time',
                 value: AppDateUtils.formatMinutes(
                   _todayStats?.totalFocusMinutes ?? 0,
@@ -148,10 +149,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 color: AppColors.primary,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 32),
             Expanded(
               child: StatsCard(
-                icon: Icons.check_circle_outline,
+                iconPath: AppAssets.iconCheck,
                 label: 'Completed sessions',
                 value: '${_todayStats?.completedSessions ?? 0}',
                 color: AppColors.success,
@@ -163,27 +164,27 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             .fadeIn(duration: AppDurations.animNormal, delay: 100.ms)
             .slideY(begin: 0.2, end: 0),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 32),
 
         Row(
           children: [
             Expanded(
               child: StatsCard(
-                icon: Icons.trending_up,
+                iconPath: AppAssets.iconStar,
                 label: 'Completion rate',
                 value: '${((_todayStats?.completionRate ?? 0) * 100).toInt()}%',
                 color: AppColors.info,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 32),
             Expanded(
               child: StatsCard(
-                icon: Icons.schedule,
+                iconPath: AppAssets.iconCalendar,
                 label: 'Best time of day',
                 value: _bestFocusHour != null
                     ? '$_bestFocusHour:00'
                     : 'Not enough data',
-                color: AppColors.secondary,
+                color: AppColors.accent,
               ),
             ),
           ],

@@ -4,10 +4,15 @@ import '../models/models.dart';
 
 /// 로컬 데이터베이스 서비스
 /// SharedPreferences를 사용하여 데이터를 저장합니다.
+/// 앱 업데이트 시 데이터 유지를 위해 백업 설정 및 마이그레이션 지원.
 class DatabaseService {
   static const String _sessionsKey = 'sessions';
   static const String _tasksKey = 'tasks';
   static const String _settingsKey = 'settings';
+  static const String _dataVersionKey = '_dataVersion';
+
+  /// 데이터 스키마 버전 (스키마 변경 시 증가)
+  static const int currentDataVersion = 1;
 
   SharedPreferences? _prefs;
 
@@ -16,9 +21,27 @@ class DatabaseService {
   factory DatabaseService() => _instance;
   DatabaseService._internal();
 
-  /// 초기화
+  /// 초기화 (앱 시작 시 main에서 호출)
+  /// 앱 업데이트 후에도 기존 데이터 유지
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
+    await _runMigrationIfNeeded();
+  }
+
+  /// 데이터 버전 확인 및 마이그레이션 실행
+  /// 앱 업데이트 후 스키마 변경 시 기존 데이터 호환성 유지
+  Future<void> _runMigrationIfNeeded() async {
+    try {
+      final savedVersion = prefs.getInt(_dataVersionKey) ?? 0;
+      if (savedVersion >= currentDataVersion) return;
+
+      // 향후 스키마 변경 시 마이그레이션 로직 추가
+      // 예: if (savedVersion < 2) await _migrateToV2();
+      await prefs.setInt(_dataVersionKey, currentDataVersion);
+    } catch (_) {
+      // 마이그레이션 실패 시 버전만 업데이트 (기존 데이터 유지)
+      await prefs.setInt(_dataVersionKey, currentDataVersion);
+    }
   }
 
   /// SharedPreferences 인스턴스 확인
@@ -171,6 +194,9 @@ class DatabaseService {
   Future<void> clearAll() async {
     await prefs.clear();
   }
+
+  /// 저장된 데이터 버전 확인 (디버그용)
+  int get savedDataVersion => _prefs?.getInt(_dataVersionKey) ?? 0;
 }
 
 

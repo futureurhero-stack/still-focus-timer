@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 앱 업데이트 시 사용자 데이터 유지를 위한 백업 규칙 -->
+<!-- SharedPreferences, 앱 데이터 포함 -->
+<full-backup-content>
+    <!-- SharedPreferences (세션, 설정, 작업 데이터) 자동 포함 -->
+    <include domain="sharedpref" path="."/>
+    <!-- 앱 파일 데이터 포함 -->
+    <include domain="database" path="."/>
+    <include domain="file" path="."/>
+</full-backup-content>
+
+
+

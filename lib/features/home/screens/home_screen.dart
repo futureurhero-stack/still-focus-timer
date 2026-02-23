@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/constants/app_durations.dart';
 import '../../../core/providers/default_duration_provider.dart';
 import '../../../data/models/emotion_type.dart';
-import '../../../shared/widgets/gradient_background.dart';
-import '../../../shared/widgets/custom_button.dart';
-import '../widgets/emotion_selector.dart';
-import '../widgets/task_input_sheet.dart';
+import '../../../shared/widgets/mood_card.dart';
+import '../../../shared/widgets/gradient_button.dart';
 
-/// Home screen
+/// Home screen - 새로운 디자인 (이미지 기반)
+/// - 헤더: "Still: Focus Timer"
+/// - 제목: "How are you feeling now?"
+/// - 2x2 그리드의 감정 카드
+/// - Quick Start 버튼
+/// - 하단 네비게이션 바
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -23,344 +24,270 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   EmotionType? _selectedEmotion;
-  int _currentDuration = 10; // 현재 선택된 세션 시간
 
-  bool _isKorean(BuildContext context) =>
-      Localizations.localeOf(context).languageCode == 'ko';
+  /// Quick Start 버튼 텍스트 생성
+  String _getQuickStartText() {
+    final defaultDuration = ref.read(defaultDurationProvider);
+    final isKo = Localizations.localeOf(context).languageCode == 'ko';
+    return isKo ? 'Quick Start $defaultDuration분' : 'Quick Start ${defaultDuration}m';
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateDurationFromProvider();
+  /// 감정 선택 핸들러
+  void _onEmotionSelected(EmotionType emotion) {
+    setState(() {
+      _selectedEmotion = _selectedEmotion == emotion ? null : emotion;
     });
   }
 
-  void _updateDurationFromProvider() {
-    final defaultDuration = ref.read(defaultDurationProvider);
-    if (mounted) {
-      setState(() {
-        // 감정이 선택되지 않았거나 '괜찮음'인 경우에만 기본 시간 업데이트
-        if (_selectedEmotion == null || _selectedEmotion == EmotionType.good) {
-          _currentDuration = defaultDuration;
-        }
-      });
-    }
-  }
-
-  /// 감정에 따른 세션 시간 계산
-  int _getDurationForEmotion(EmotionType? emotion) {
-    final defaultDuration = ref.read(defaultDurationProvider);
-    if (emotion == null) {
-      return defaultDuration;
-    }
-    switch (emotion) {
-      case EmotionType.tired:
-        return 5; // 하기 싫음: 5분
-      case EmotionType.stressed:
-        return 10; // 스트레스: 10분
-      case EmotionType.sleepy:
-        return 15; // 졸림: 15분
-      case EmotionType.good:
-        return defaultDuration; // 괜찮음: 설정의 기본 세션 시간
-    }
-  }
-
-  void _showTaskInput() {
-    final defaultDuration = ref.read(defaultDurationProvider);
-    
-    if (_selectedEmotion == null) {
-      // If no emotion is selected, use default
-      setState(() {
-        _selectedEmotion = EmotionType.good;
-        _currentDuration = defaultDuration;
-      });
-    }
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => TaskInputSheet(
-        emotion: _selectedEmotion!,
-        duration: _currentDuration, // 현재 선택된 세션 시간 사용
-        onStart: (taskDescription, duration) {
-          _startSession(taskDescription, duration);
-        },
-      ),
-    );
-  }
-
-  void _startSession(String? taskDescription, int duration) {
-    context.pushNamed(
-      'timer',
-      extra: {
-        'emotion': _selectedEmotion ?? EmotionType.good,
-        'duration': duration,
-        'task': taskDescription,
-      },
-    );
-  }
-
-  void _quickStart() {
-    // Quick start: begin without selecting emotion
+  /// Quick Start 버튼 핸들러
+  void _onQuickStart() {
+    final duration = _selectedEmotion?.recommendedDuration ?? 
+                    ref.read(defaultDurationProvider);
     final emotion = _selectedEmotion ?? EmotionType.good;
-    // 감정에 따른 세션 시간 계산
-    final duration = _getDurationForEmotion(emotion);
     
-    context.pushNamed(
-      'timer',
-      extra: {
-        'emotion': emotion,
-        'duration': duration, // 감정에 따른 세션 시간 사용
-        'task': null,
-      },
-    );
+    context.pushNamed('timer', extra: {
+      'emotion': emotion,
+      'duration': duration,
+      'task': null,
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isKo = Localizations.localeOf(context).languageCode == 'ko';
+    
     return Scaffold(
-      body: GradientBackground(
-        child: Stack(
-          children: [
-            // Background decoration
-            const Positioned(
-              top: -100,
-              right: -100,
-              child: BackgroundOrb(
-                color: AppColors.primary,
-                size: 300,
-                alignment: Alignment.topRight,
-              ),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Container(
+          // 부드러운 그라데이션 배경 (이미지 기반)
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFFFFBF7), // 거의 흰색
+                Color(0xFFF5F0EB), // 연한 라벤더/베이지
+              ],
             ),
-            const Positioned(
-              bottom: -50,
-              left: -50,
-              child: BackgroundOrb(
-                color: AppColors.secondary,
-                size: 200,
-                alignment: Alignment.bottomLeft,
-              ),
-            ),
-
-            // Main content
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-
-                    // Header
-                    _buildHeader(),
-                    const SizedBox(height: 40),
-
-                    // Welcome message
-                    _buildWelcomeMessage(),
-                    const SizedBox(height: 32),
-
-                    // Emotion selector
-                    EmotionSelector(
-                      selectedEmotion: _selectedEmotion,
-                      onEmotionSelected: (emotion) {
-                        setState(() {
-                          _selectedEmotion = emotion;
-                          // 감정 선택 시 해당 감정의 권장 시간으로 업데이트
-                          _currentDuration = _getDurationForEmotion(emotion);
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Selected emotion info
-                    if (_selectedEmotion != null)
-                      EmotionInfoCard(emotion: _selectedEmotion!),
-
-                    const Spacer(),
-
-                    // Start button
-                    _buildStartButton(),
-                    const SizedBox(height: 16),
-
-                    // Quick start button
-                    _buildQuickStartButton(),
-                    const SizedBox(height: 24),
-
-                    // Bottom navigation
-                    _buildBottomNav(),
-                    const SizedBox(height: 16),
-                  ],
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 32),
+                
+                // 헤더: "Still: Focus Timer"
+                _buildHeader(),
+                
+                const SizedBox(height: 48),
+                
+                // 제목: "How are you feeling now?"
+                _buildTitle(),
+                
+                const SizedBox(height: 32),
+                
+                // 2x2 그리드의 감정 카드
+                _buildMoodGrid(),
+                
+                const SizedBox(height: 40),
+                
+                // Quick Start 버튼
+                GradientButton(
+                  text: _getQuickStartText(),
+                  onPressed: _onQuickStart,
                 ),
-              ),
+                
+                const SizedBox(height: 48),
+                
+                // 하단 네비게이션 바
+                _buildBottomNav(isKo),
+                
+                const SizedBox(height: 32),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
+  /// 헤더 위젯: "Still: Focus Timer"
   Widget _buildHeader() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppStrings.appName(context),
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            Text(
-              AppStrings.appTagline(context),
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        )
-            .animate()
-            .fadeIn(duration: AppDurations.animNormal)
-            .slideX(begin: -0.2, end: 0),
-        // Settings button
-        IconButton(
-          onPressed: () => context.pushNamed('settings'),
-          icon: const Icon(
-            Icons.settings_outlined,
-            color: AppColors.textSecondary,
+        // 보라색 뇌 아이콘 (CustomPaint로 구현)
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: const Color(0xFF9C88FF).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
-        )
-            .animate()
-            .fadeIn(duration: AppDurations.animNormal, delay: 200.ms)
-            .scale(begin: const Offset(0.8, 0.8)),
-      ],
-    );
-  }
-
-  Widget _buildWelcomeMessage() {
-    final hour = DateTime.now().hour;
-    final isKo = _isKorean(context);
-    String greeting;
-    if (hour < 12) {
-      greeting = isKo ? '좋은 아침이에요!' : 'Good morning!';
-    } else if (hour < 18) {
-      greeting = isKo ? '좋은 오후예요!' : 'Good afternoon!';
-    } else {
-      greeting = isKo ? '좋은 저녁이에요!' : 'Good evening!';
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+          child: CustomPaint(
+            painter: _BrainIconPainter(),
+          ),
+        ),
+        const SizedBox(width: 12),
         Text(
-          greeting,
-          style: const TextStyle(
+          'Still: Focus Timer',
+          style: TextStyle(
             fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          AppStrings.welcomeMessage(context),
-          style: const TextStyle(
-            fontSize: 16,
-            color: AppColors.textSecondary,
+            fontFamily: 'Pretendard',
           ),
         ),
       ],
-    )
-        .animate()
-        .fadeIn(duration: AppDurations.animNormal, delay: 100.ms)
-        .slideY(begin: 0.2, end: 0);
-  }
-
-  Widget _buildStartButton() {
-    final defaultDuration = ref.watch(defaultDurationProvider);
-    final hasEmotion = _selectedEmotion != null;
-    // 감정이 선택된 경우 현재 세션 시간 사용, 아니면 기본 시간 사용
-    final duration = hasEmotion ? _currentDuration : defaultDuration;
-    final buttonText = hasEmotion
-        ? (_isKorean(context)
-            ? '$duration분 시작하기'
-            : 'Start $duration minutes')
-        : AppStrings.startButton(context);
-
-    return StartButton(
-      text: buttonText,
-      onPressed: _showTaskInput,
-      isEnabled: true,
     );
   }
 
-  Widget _buildQuickStartButton() {
-    return TextButton(
-      onPressed: _quickStart,
-      child: Text(
-        Localizations.localeOf(context).languageCode == 'ko'
-            ? '작업 입력 없이 바로 시작 →'
-            : 'Start without entering a task →',
-        style: const TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 14,
-        ),
+  /// 제목 위젯: "How are you feeling now?"
+  Widget _buildTitle() {
+    return Text(
+      AppStrings.selectEmotion(context),
+      style: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textPrimary,
+        fontFamily: 'Pretendard',
+        height: 1.2,
       ),
-    )
-        .animate()
-        .fadeIn(duration: AppDurations.animNormal, delay: 300.ms);
+    );
   }
 
-  Widget _buildBottomNav() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _NavButton(
-          icon: Icons.home_rounded,
-          label:
-              Localizations.localeOf(context).languageCode == 'ko' ? '홈' : 'Home',
-          isSelected: true,
-          onTap: () {},
-        ),
-        const SizedBox(width: 32),
-        _NavButton(
-          icon: Icons.bar_chart_rounded,
-          label:
-              Localizations.localeOf(context).languageCode == 'ko' ? '통계' : 'Analytics',
-          isSelected: false,
-          onTap: () => context.pushNamed('analytics'),
-        ),
-        const SizedBox(width: 32),
-        _NavButton(
-          icon: Icons.settings_rounded,
-          label:
-              Localizations.localeOf(context).languageCode == 'ko' ? '설정' : 'Settings',
-          isSelected: false,
-          onTap: () => context.pushNamed('settings'),
-        ),
-      ],
-    )
-        .animate()
-        .fadeIn(duration: AppDurations.animNormal, delay: 400.ms);
+  /// 감정 카드 그리드 (2x2)
+  Widget _buildMoodGrid() {
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 16,
+      childAspectRatio: 1.1,
+      children: EmotionType.values.map((emotion) {
+        return MoodCard(
+          emotion: emotion,
+          isSelected: _selectedEmotion == emotion,
+          onTap: () => _onEmotionSelected(emotion),
+        );
+      }).toList(),
+    );
+  }
+
+  /// 하단 네비게이션 바
+  Widget _buildBottomNav(bool isKo) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _NavItem(
+            icon: Icons.home_rounded,
+            label: isKo ? '홈' : 'Home',
+            isSelected: true,
+            onTap: () {},
+          ),
+          _NavItem(
+            icon: Icons.bar_chart_rounded,
+            label: isKo ? '통계' : 'Stats',
+            isSelected: false,
+            onTap: () => context.pushNamed('analytics'),
+          ),
+          _NavItem(
+            icon: Icons.timer_rounded,
+            label: isKo ? '포커스' : 'Focus',
+            isSelected: false,
+            onTap: () {},
+          ),
+          _NavItem(
+            icon: Icons.person_rounded,
+            label: isKo ? '프로필' : 'Profile',
+            isSelected: false,
+            onTap: () => context.pushNamed('settings'),
+          ),
+        ],
+      ),
+    );
   }
 }
 
-/// 하단 네비게이션 버튼
-class _NavButton extends StatelessWidget {
+/// 뇌 아이콘 페인터 (보라색)
+class _BrainIconPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF9C88FF)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+
+    // 간단한 뇌 모양
+    final path = Path();
+    // 왼쪽 반구
+    path.moveTo(size.width * 0.3, size.height * 0.3);
+    path.quadraticBezierTo(
+      size.width * 0.1,
+      size.height * 0.4,
+      size.width * 0.2,
+      size.height * 0.6,
+    );
+    path.quadraticBezierTo(
+      size.width * 0.15,
+      size.height * 0.75,
+      size.width * 0.3,
+      size.height * 0.7,
+    );
+    
+    // 오른쪽 반구
+    path.moveTo(size.width * 0.7, size.height * 0.3);
+    path.quadraticBezierTo(
+      size.width * 0.9,
+      size.height * 0.4,
+      size.width * 0.8,
+      size.height * 0.6,
+    );
+    path.quadraticBezierTo(
+      size.width * 0.85,
+      size.height * 0.75,
+      size.width * 0.7,
+      size.height * 0.7,
+    );
+    
+    // 중앙 연결
+    path.moveTo(size.width * 0.3, size.height * 0.5);
+    path.lineTo(size.width * 0.7, size.height * 0.5);
+    
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// 네비게이션 아이템
+class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _NavButton({
+  const _NavItem({
     required this.icon,
     required this.label,
-    required this.isSelected,
+    this.isSelected = false,
     required this.onTap,
   });
 
@@ -373,16 +300,21 @@ class _NavButton extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: isSelected ? AppColors.primary : AppColors.textMuted,
             size: 28,
+            color: isSelected 
+                ? const Color(0xFF9C88FF) 
+                : AppColors.textMuted,
           ),
           const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
-              color: isSelected ? AppColors.primary : AppColors.textMuted,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              color: isSelected 
+                  ? const Color(0xFF9C88FF) 
+                  : AppColors.textMuted,
+              fontFamily: 'Pretendard',
             ),
           ),
         ],
@@ -390,7 +322,3 @@ class _NavButton extends StatelessWidget {
     );
   }
 }
-
-
-
-
