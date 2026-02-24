@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_strings.dart';
 import 'core/locale/locale_provider.dart';
-import 'features/home/screens/home_screen.dart';
+import 'screens/home_screen.dart';
 import 'features/timer/screens/timer_screen.dart';
 import 'features/reflection/screens/reflection_screen.dart';
 import 'features/analytics/screens/analytics_screen.dart';
