@@ -129,131 +129,181 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
         }
       },
       child: Scaffold(
-        body: GradientBackground(
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 48),
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
+        backgroundColor: const Color(0xFFF7F8FC),
+        body: Stack(
+          children: [
+            // 1) Soft wave background (same as HomeScreen)
+            const _SoftWaveBackground(),
+            
+            // 2) Content
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 24),
 
-                  // 헤더
-                  _buildHeader(timerState),
-                  const SizedBox(height: 80),
+                    // Header
+                    _buildHeader(timerState),
+                    const SizedBox(height: 48),
 
-                  // 작업 정보
-                  if (widget.taskDescription != null)
-                    _buildTaskInfo()
+                    // Task Info Card
+                    if (widget.taskDescription != null)
+                      _buildTaskInfo()
+                          .animate()
+                          .fadeIn(duration: 400.ms)
+                          .slideY(begin: 0.1, end: 0),
+
+                    const Spacer(),
+
+                    // Timer Circular View
+                    CircularTimer(
+                      remainingSeconds: timerState.remainingSeconds,
+                      totalSeconds: timerState.totalSeconds,
+                      isRunning: timerState.isRunning,
+                      isPaused: timerState.isPaused,
+                      progressColor: widget.emotion.color,
+                    )
                         .animate()
-                        .fadeIn(duration: AppDurations.animNormal)
-                        .slideY(begin: -0.2, end: 0),
+                        .scale(
+                          begin: const Offset(0.9, 0.9),
+                          end: const Offset(1, 1),
+                          duration: 600.ms,
+                          curve: Curves.easeOutBack,
+                        )
+                        .fadeIn(),
 
-                  const Spacer(),
+                    const Spacer(),
 
-                  // 타이머
-                  CircularTimer(
-                    remainingSeconds: timerState.remainingSeconds,
-                    totalSeconds: timerState.totalSeconds,
-                    isRunning: timerState.isRunning,
-                    isPaused: timerState.isPaused,
-                    progressColor: widget.emotion.color,
-                  )
-                      .animate()
-                      .scale(
-                        begin: const Offset(0.8, 0.8),
-                        end: const Offset(1, 1),
-                        duration: AppDurations.animSlow,
-                      )
-                      .fadeIn(),
-
-                  const Spacer(),
-
-                  // 컨트롤 버튼
-                  _buildControls(timerState),
-                  const SizedBox(height: 80),
-                ],
+                    // Control Buttons
+                    _buildControls(timerState),
+                    const SizedBox(height: 48),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildHeader(TimerState timerState) {
+    // Header label: match quick_start / start_my_routine keys for localized label
+    String headerLabel;
+    if (widget.taskDescription == 'start_my_routine') {
+      headerLabel = AppStrings.defaultDuration(context);
+    } else if (widget.taskDescription == 'quick_start') {
+      headerLabel = AppStrings.quickStart(context);
+    } else {
+      headerLabel = widget.emotion.label(context);
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // 감정 표시
+        // Emotion Label Bagde
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
-            color: widget.emotion.color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(40),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.black.withOpacity(0.05)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                widget.emotion.emoji,
-                style: const TextStyle(fontSize: 40),
+              Icon(
+                widget.emotion.icon,
+                size: 22,
+                color: widget.emotion.color,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 8),
               Text(
-                widget.emotion.label(context),
+                headerLabel,
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
                   color: widget.emotion.color,
+                  letterSpacing: -0.5,
                 ),
               ),
             ],
           ),
         )
             .animate()
-            .fadeIn(duration: AppDurations.animNormal)
-            .slideX(begin: -0.2, end: 0),
+            .fadeIn(duration: 400.ms)
+            .slideX(begin: -0.1, end: 0),
 
-        // 종료 버튼
+        // Give Up Button
         TextButton(
           onPressed: _showGiveUpDialog,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          ),
           child: Text(
             AppStrings.giveUpButton(context),
-            style: const TextStyle(
-              color: AppColors.textMuted,
-              fontSize: 28,
+            style: TextStyle(
+              color: Colors.black.withOpacity(0.35),
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
             ),
           ),
         )
             .animate()
-            .fadeIn(duration: AppDurations.animNormal, delay: 200.ms),
+            .fadeIn(duration: 400.ms, delay: 200.ms),
       ],
     );
+  }
+
+  String _getTaskDisplayLabel(BuildContext context) {
+    if (widget.taskDescription == 'start_my_routine') {
+      return AppStrings.defaultDuration(context);
+    }
+    if (widget.taskDescription == 'quick_start') {
+      return AppStrings.quickStart(context);
+    }
+    return widget.taskDescription!;
   }
 
   Widget _buildTaskInfo() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(32),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.75), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: widget.emotion.color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(24),
+              color: widget.emotion.color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               Icons.task_alt,
               color: widget.emotion.color,
-              size: 40,
+              size: 24,
             ),
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,18 +312,19 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
                   Localizations.localeOf(context).languageCode == 'ko'
                       ? '현재 작업'
                       : 'Current task',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    color: AppColors.textMuted,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black.withOpacity(0.4),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 2),
                 Text(
-                  widget.taskDescription!,
+                  _getTaskDisplayLabel(context),
                   style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF121318),
                   ),
                 ),
               ],
@@ -288,40 +339,120 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // 일시정지/재개 버튼
+        // Pause/Resume Button
         GestureDetector(
           onTap: _togglePause,
-          child: Container(
-            width: 72,
-            height: 72,
+          child: AnimatedContainer(
+            duration: 300.ms,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: timerState.isPaused
-                  ? AppColors.accent
-                  : AppColors.surface,
+                  ? widget.emotion.color
+                  : Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
+                  color: (timerState.isPaused ? widget.emotion.color : Colors.black)
+                      .withOpacity(0.12),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
                 ),
               ],
+              border: timerState.isPaused 
+                  ? null 
+                  : Border.all(color: Colors.black.withOpacity(0.05)),
             ),
-            child: SvgIcon(
-              assetPath: timerState.isPaused ? AppAssets.iconPlay : AppAssets.iconPause,
-              size: 36,
-              color: timerState.isPaused ? Colors.white : AppColors.textPrimary,
+            child: Icon(
+              timerState.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+              size: 40,
+              color: timerState.isPaused ? Colors.white : const Color(0xFF121318),
             ),
           ),
         )
             .animate()
             .scale(
-              begin: const Offset(0.8, 0.8),
+              begin: const Offset(0.9, 0.9),
               end: const Offset(1, 1),
+              duration: 400.ms,
             )
-            .fadeIn(delay: 300.ms),
+            .fadeIn(delay: 400.ms),
       ],
     );
   }
+}
+
+// Replicating Home's background for visual harmony
+class _SoftWaveBackground extends StatelessWidget {
+  const _SoftWaveBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFF7F8FC),
+              Color(0xFFF3F5FB),
+            ],
+          ),
+        ),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: SizedBox(
+            height: 260,
+            width: double.infinity,
+            child: CustomPaint(
+              painter: _WavePainter(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WavePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final gradient1 = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        const Color(0xFF12A594).withOpacity(0.05),
+        const Color(0xFF12A594).withOpacity(0.01),
+      ],
+    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final paint1 = Paint()
+      ..shader = gradient1
+      ..style = PaintingStyle.fill;
+
+    // Wave 1
+    final p1 = Path();
+    p1.moveTo(0, size.height * 0.7);
+    p1.quadraticBezierTo(
+      size.width * 0.25,
+      size.height * 0.5,
+      size.width * 0.50,
+      size.height * 0.7,
+    );
+    p1.quadraticBezierTo(
+      size.width * 0.75,
+      size.height * 0.9,
+      size.width,
+      size.height * 0.7,
+    );
+    p1.lineTo(size.width, size.height);
+    p1.lineTo(0, size.height);
+    p1.close();
+    canvas.drawPath(p1, paint1);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 

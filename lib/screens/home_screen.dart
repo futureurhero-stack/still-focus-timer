@@ -1,5 +1,15 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../core/constants/app_colors.dart';
+import '../core/constants/app_strings.dart';
+import '../core/providers/default_duration_provider.dart';
+import '../shared/widgets/gradient_button.dart';
+import '../data/models/emotion_type.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,10 +21,43 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _navIndex = 0;
 
+  _Quote? _todayQuote;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadQuoteOfTheDay();
+  }
+
+  Future<void> _loadQuoteOfTheDay() async {
+    try {
+      final raw = await rootBundle.loadString(
+        'assets/quotes/still_schopenhauer_60.json',
+      );
+      final List<dynamic> jsonList = jsonDecode(raw) as List<dynamic>;
+      if (jsonList.isEmpty) return;
+
+      final quotes = jsonList
+          .map((e) => _Quote.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      // 날짜를 기반으로 시드를 만든 뒤, 그날에만 고정된 랜덤 인덱스를 사용
+      final now = DateTime.now();
+      final seed = now.year * 10000 + now.month * 100 + now.day;
+      final random = Random(seed);
+      final index = random.nextInt(quotes.length);
+
+      setState(() {
+        _todayQuote = quotes[index];
+      });
+    } catch (_) {
+      // 실패해도 홈 화면은 정상 동작해야 하므로 조용히 무시합니다.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const bgTop = Color(0xFFF7F8FC);
-    const bgBottom = Color(0xFFF3F5FB);
 
     return Scaffold(
       backgroundColor: bgTop,
@@ -42,9 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    "How are you feeling now?",
-                    style: TextStyle(
+                  Text(
+                    AppStrings.howAreYouFeelingNow(context),
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF121318),
@@ -64,36 +107,52 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       children: [
                         _EmotionCard(
-                          icon: Icons.psychology_alt_rounded,
-                          title: "Overwhelmed",
-                          subtitle: "Too much on your mind?",
+                          icon: Icons.sentiment_very_dissatisfied_rounded,
+                          title: AppStrings.emotionStressed(context),
+                          subtitle: AppStrings.emotionStressedDesc(context),
                           duration: "10–15 min",
-                          accent: const Color(0xFFE44A6A), // deep rose
-                          onTap: () => _goTimer(duration: 15, task: "Overwhelmed session"),
+                          accent: AppColors.emotionStressed,
+                          onTap: () => _goTimer(
+                            duration: 15,
+                            task: "${AppStrings.emotionStressed(context)} session",
+                            emotion: EmotionType.stressed,
+                          ),
                         ),
                         _EmotionCard(
                           icon: Icons.blur_on_rounded,
-                          title: "Distracted",
-                          subtitle: "Hard to stay on task?",
+                          title: AppStrings.emotionTired(context),
+                          subtitle: AppStrings.emotionTiredDesc(context),
                           duration: "15–20 min",
-                          accent: const Color(0xFF3C6FF2), // refined blue
-                          onTap: () => _goTimer(duration: 20, task: "Distracted session"),
+                          accent: AppColors.emotionTired,
+                          onTap: () => _goTimer(
+                            duration: 20,
+                            task: "${AppStrings.emotionTired(context)} session",
+                            emotion: EmotionType.tired,
+                          ),
                         ),
                         _EmotionCard(
                           icon: Icons.battery_3_bar_rounded,
-                          title: "Low Energy",
-                          subtitle: "Running low today?",
+                          title: AppStrings.emotionSleepy(context),
+                          subtitle: AppStrings.emotionSleepyDesc(context),
                           duration: "5–10 min",
-                          accent: const Color(0xFF6E5CF6), // refined violet
-                          onTap: () => _goTimer(duration: 10, task: "Low energy session"),
+                          accent: AppColors.emotionSleepy,
+                          onTap: () => _goTimer(
+                            duration: 10,
+                            task: "${AppStrings.emotionSleepy(context)} session",
+                            emotion: EmotionType.sleepy,
+                          ),
                         ),
                         _EmotionCard(
                           icon: Icons.track_changes_rounded,
-                          title: "In the Zone",
-                          subtitle: "Ready to dive in?",
+                          title: AppStrings.emotionGood(context),
+                          subtitle: AppStrings.emotionGoodDesc(context),
                           duration: "25 min",
-                          accent: const Color(0xFF12A594), // premium teal
-                          onTap: () => _goTimer(duration: 25, task: "In the Zone"),
+                          accent: AppColors.emotionGood,
+                          onTap: () => _goTimer(
+                            duration: 25,
+                            task: AppStrings.emotionGood(context),
+                            emotion: EmotionType.good,
+                          ),
                         ),
                       ],
                     ),
@@ -101,9 +160,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const SizedBox(height: 10),
 
-                  _QuickStartButton(
-                    label: "Quick Start 10 min",
-                    onTap: () => _goTimer(duration: 10, task: "Quick Start"),
+                  if (_todayQuote != null) ...[
+                    _QuoteBanner(quote: _todayQuote!),
+                    const SizedBox(height: 14),
+                  ],
+
+                  // Quick actions: fixed 10min + default duration
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final defaultDuration = ref.watch(defaultDurationProvider);
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          GradientButton(
+                            text:
+                                '${AppStrings.quickStart(context)} 10 ${AppStrings.minutes(context)}',
+                            onPressed: () =>
+                                _goTimer(duration: 10, task: 'quick_start'),
+                          ),
+                          const SizedBox(height: 12),
+                          GradientButton(
+                            text:
+                                '${AppStrings.defaultDuration(context)} • $defaultDuration ${AppStrings.minutes(context)}',
+                            onPressed: () => _goTimer(
+                              duration: defaultDuration,
+                              task: 'start_my_routine',
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 18),
@@ -118,24 +204,108 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _navIndex,
         onTap: (i) {
           setState(() => _navIndex = i);
-          if (i == 0) return;
-          if (i == 1) context.go('/analytics');
-          if (i == 2) _goTimer(duration: 25, task: "Focus");
-          if (i == 3) context.go('/settings');
+          if (i == 0) return; // Home
+          if (i == 1) context.go('/analytics'); // Stats
+          if (i == 2) context.go('/settings'); // Settings
         },
       ),
     );
   }
 
-  void _goTimer({required int duration, String? task}) {
-    // EmotionType enum을 건드리지 않기 위해 emotion은 전달하지 않습니다.
-    // 라우터에서 EmotionType.good로 기본 처리됩니다.
+  void _goTimer({required int duration, String? task, EmotionType? emotion}) {
     context.push(
       '/timer',
       extra: <String, dynamic>{
         'duration': duration,
         'task': task,
+        'emotion': emotion ?? EmotionType.good,
       },
+    );
+  }
+}
+
+class _Quote {
+  final int id;
+  final String author;
+  final String title;
+  final String subtitle;
+
+  const _Quote({
+    required this.id,
+    required this.author,
+    required this.title,
+    required this.subtitle,
+  });
+
+  factory _Quote.fromJson(Map<String, dynamic> json) {
+    return _Quote(
+      id: json['id'] as int,
+      author: json['author'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      subtitle: json['subtitle'] as String? ?? '',
+    );
+  }
+}
+
+class _QuoteBanner extends StatelessWidget {
+  final _Quote quote;
+
+  const _QuoteBanner({required this.quote});
+
+  @override
+  Widget build(BuildContext context) {
+    final rawSubtitle = quote.subtitle;
+    final cutIndex = rawSubtitle.lastIndexOf(' - ');
+    final displaySubtitle =
+        cutIndex > 0 ? rawSubtitle.substring(0, cutIndex).trim() : rawSubtitle;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.94),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 18,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            quote.title,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF121318),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            displaySubtitle,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF121318).withOpacity(0.6),
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '- ${quote.author} -',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF121318).withOpacity(0.45),
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -300,59 +470,7 @@ class _EmotionCard extends StatelessWidget {
   }
 }
 
-class _QuickStartButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _QuickStartButton({
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(30),
-        onTap: onTap,
-        child: Ink(
-          width: double.infinity,
-          height: 60,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF2A2B31),
-                Color(0xFF141519),
-              ],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.16),
-                blurRadius: 28,
-                offset: const Offset(0, 16),
-              ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-                letterSpacing: 0.15,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+// _QuickStartButton removed and replaced by shared GradientButton
 
 class _BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -387,11 +505,19 @@ class _BottomNav extends StatelessWidget {
         unselectedItemColor: const Color(0xFF121318).withOpacity(0.35),
         selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
         unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart_rounded), label: 'Stats'),
-          BottomNavigationBarItem(icon: Icon(Icons.timer_rounded), label: 'Focus'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home_filled),
+            label: AppStrings.navHome(context),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.bar_chart_rounded),
+            label: AppStrings.navStats(context),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.settings_rounded),
+            label: AppStrings.navSettings(context),
+          ),
         ],
       ),
     );
@@ -434,13 +560,31 @@ class _SoftWaveBackground extends StatelessWidget {
 class _WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // 아주 얕은 웨이브 (프리미엄 느낌: "보일 듯 말 듯")
+
+    final gradient1 = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        const Color(0xFF12A594).withOpacity(0.08),
+        const Color(0xFF12A594).withOpacity(0.02),
+      ],
+    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final gradient2 = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        const Color(0xFF12A594).withOpacity(0.05),
+        const Color(0xFF12A594).withOpacity(0.01),
+      ],
+    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
     final paint1 = Paint()
-      ..color = const Color(0xFF121318).withOpacity(0.025)
+      ..shader = gradient1
       ..style = PaintingStyle.fill;
 
     final paint2 = Paint()
-      ..color = const Color(0xFF121318).withOpacity(0.018)
+      ..shader = gradient2
       ..style = PaintingStyle.fill;
 
     // Wave 1
@@ -463,7 +607,7 @@ class _WavePainter extends CustomPainter {
     p1.close();
     canvas.drawPath(p1, paint1);
 
-    // Wave 2 (조금 더 아래, 더 옅게)
+    // Wave 2
     final p2 = Path();
     p2.moveTo(0, size.height * 0.76);
     p2.quadraticBezierTo(

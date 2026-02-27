@@ -32,13 +32,22 @@ class CircularTimer extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // 배경 트랙 (연한 회색)
+            // 배경 트랙 (진행 색상의 연한 버전으로 선명하게 표시)
             CustomPaint(
               size: const Size(320, 320),
               painter: _CircularProgressPainter(
                 progress: 1.0,
-                color: AppColors.surfaceLight.withValues(alpha: 0.8),
-                strokeWidth: 10,
+                color: progressColor.withOpacity(0.12),
+                strokeWidth: 16,
+              ),
+            ),
+            // 내부 테두리 (입체감을 위한 보조 선)
+            CustomPaint(
+              size: const Size(320, 320),
+              painter: _CircularProgressPainter(
+                progress: 1.0,
+                color: Colors.black.withOpacity(0.03),
+                strokeWidth: 1,
               ),
             ),
             // 진행 링 (액센트 컬러)
@@ -47,7 +56,7 @@ class CircularTimer extends StatelessWidget {
               painter: _CircularProgressPainter(
                 progress: progress,
                 color: progressColor,
-                strokeWidth: 10,
+                strokeWidth: 16,
               ),
             ),
             // 중앙 시간 표시
@@ -57,11 +66,11 @@ class CircularTimer extends StatelessWidget {
                 Text(
                   _formatTime(remainingSeconds),
                   style: const TextStyle(
-                    fontSize: 64,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    fontSize: 54,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF121318),
                     fontFamily: 'Pretendard',
-                    letterSpacing: -1,
+                    letterSpacing: -1.5,
                   ),
                 ),
               ],

@@ -18,86 +18,147 @@ class DailyStoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const glowColor = Color(0xFF6E5CF6);
+    final glowB = glowColor.withValues(alpha: 0.05);
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(48),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.primary.withValues(alpha: 0.15),
-            AppColors.accent.withValues(alpha: 0.15),
+            const Color(0xFFFFFFFF),
+            glowB,
           ],
         ),
-        borderRadius: BorderRadius.circular(48),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
-        ),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.75), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.055),
+            blurRadius: 30,
+            offset: const Offset(0, 18),
+          ),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 제목
-          Row(
-            children: [
-              const Text(
-                '📖',
-                style: TextStyle(fontSize: 48),
-              ),
-              const SizedBox(width: 16),
-              Text(
-                AppStrings.dailyStoryTitle(context),
-                style: const TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: Stack(
+          children: [
+            // Background glow
+            Positioned(
+              left: -30,
+              top: -30,
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: glowColor.withValues(alpha: 0.1),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 32),
-
-          // 스토리 내용
-          Text(
-            _generateStory(context),
-            style: const TextStyle(
-              fontSize: 32,
-              height: 1.6,
-              color: AppColors.textSecondary,
             ),
-          ),
 
-          // 공유 버튼
-          if (stats?.hasAnySession == true) ...[
-            const SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton.icon(
-                  onPressed: () => _shareStory(context),
-                  icon: const Icon(
-                    Icons.share_outlined,
-                    size: 36,
-                    color: AppColors.primary,
+            // Bottom accent bar
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 12,
+              child: Container(
+                height: 3,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(99),
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      glowColor.withValues(alpha: 0.6),
+                      glowColor.withValues(alpha: 0.1),
+                    ],
                   ),
-                  label: Text(
-                    AppStrings.shareStory(context),
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header with Icon
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.auto_stories_rounded,
+                          size: 24,
+                          color: glowColor,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        AppStrings.dailyStoryTitle(context),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF121318),
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Story content
+                  Text(
+                    _generateStory(context),
+                    style: TextStyle(
+                      fontSize: 15,
+                      height: 1.6,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF121318).withValues(alpha: 0.7),
                     ),
                   ),
-                ),
-              ],
+
+                  // Share button
+                  if (stats?.hasAnySession == true) ...[
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        onPressed: () => _shareStory(context),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.accent,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        ),
+                        icon: const Icon(Icons.share_rounded, size: 18),
+                        label: Text(
+                          AppStrings.shareStory(context),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 10), // Padding for bottom bar
+                ],
+              ),
             ),
           ],
-        ],
+        ),
       ),
     )
         .animate()
-        .fadeIn(duration: AppDurations.animNormal)
-        .slideY(begin: 0.2, end: 0);
+        .fadeIn(duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   String _generateStory(BuildContext context) {
@@ -159,7 +220,7 @@ class DailyStoryCard extends StatelessWidget {
     // Total focus time
     if (stats!.totalFocusMinutes > 0) {
       final formattedTime =
-          AppDateUtils.formatMinutes(stats!.totalFocusMinutes);
+          AppDateUtils.formatMinutes(context, stats!.totalFocusMinutes);
       buffer.writeln(isKo
           ? '\n총 $formattedTime 동안 집중했어요! 🔥'
           : '\nYou focused for a total of $formattedTime today! 🔥');
@@ -176,20 +237,23 @@ class DailyStoryCard extends StatelessWidget {
     
     final isKo = Localizations.localeOf(context).languageCode == 'ko';
 
+    final appBrand = 'Still: Focus Timer';
     final shareText = isKo
         ? '''
 📖 오늘의 집중 스토리 ($dateStr)
 
 $story
 
-#FocusFlow #집중 #포모도로
+$appBrand
+#StillFocusTimer #스틸포커스타이머 #집중 #고요한집중
 '''
         : '''
 📖 Today's focus story ($dateStr)
 
 $story
 
-#FocusFlow #focus #pomodoro
+$appBrand
+#StillFocusTimer #FocusTimer #Still #MindfulFocus
 ''';
     
     Share.share(shareText);

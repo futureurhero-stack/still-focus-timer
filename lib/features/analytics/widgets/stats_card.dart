@@ -21,59 +21,123 @@ class StatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const baseText = Color(0xFF121318);
+    final glowA = color.withValues(alpha: 0.12);
+    final glowB = color.withValues(alpha: 0.06);
+
     return Container(
-      padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(40),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFFFFFFF),
+            glowB,
+          ],
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 아이콘
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: iconPath != null
-                ? SvgIcon(
-                    assetPath: iconPath!,
-                    size: 48,
-                    color: color,
-                  )
-                : Icon(
-                    icon!,
-                    color: color,
-                    size: 48,
-                  ),
-          ),
-          const SizedBox(height: 32),
-
-          // 레이블
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 24,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // 값
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 44,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.75), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.055),
+            blurRadius: 30,
+            offset: const Offset(0, 18),
           ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: Stack(
+          children: [
+            // Background glow
+            Positioned(
+              left: -20,
+              top: -20,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: glowA,
+                ),
+              ),
+            ),
+
+            // Bottom accent bar
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 12,
+              child: Container(
+                height: 3,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(99),
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      color.withValues(alpha: 0.7),
+                      color.withValues(alpha: 0.1),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Icon
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: iconPath != null
+                        ? SvgIcon(
+                            assetPath: iconPath!,
+                            size: 24,
+                            color: color,
+                          )
+                        : Icon(
+                            icon!,
+                            color: color,
+                            size: 24,
+                          ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Label
+                  Text(
+                    label.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      color: baseText.withValues(alpha: 0.35),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Value
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: color,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 8), // For bottom bar
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

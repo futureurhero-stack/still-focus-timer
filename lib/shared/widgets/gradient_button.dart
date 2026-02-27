@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_durations.dart';
 
 /// 그라데이션 버튼 위젯 (Quick Start 버튼용)
@@ -45,19 +46,17 @@ class _GradientButtonState extends State<GradientButton> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF9C88FF), // 보라색 중심
-                Color(0xFFB19DFF), // 밝은 보라색
-                Color(0xFFFFB84D), // 오렌지 (테두리 효과)
+                AppColors.accent,
+                AppColors.accentDark,
               ],
-              stops: [0.0, 0.5, 1.0],
             ),
             borderRadius: BorderRadius.circular(32),
             boxShadow: [
               // 부드러운 그림자
               BoxShadow(
-                color: const Color(0xFF9C88FF).withValues(alpha: 0.3),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
+                color: AppColors.accent.withValues(alpha: 0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
                 spreadRadius: 0,
               ),
             ],

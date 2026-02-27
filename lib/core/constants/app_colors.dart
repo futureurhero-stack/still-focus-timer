@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Still Focus 앱의 색상 시스템
 /// 산뜻하고 깔끔한 미니멀 디자인 (샘플 스타일)
+/// — 4가지 감정 색상 버전 (emotionTired, emotionStressed, emotionSleepy, emotionGood)
 class AppColors {
   AppColors._();
 
@@ -28,10 +29,10 @@ class AppColors {
   static const Color textMuted = Color(0xFF9B9B9B);
 
   // ===== Emotion Colors =====
-  static const Color emotionTired = Color(0xFFE87D54);
-  static const Color emotionStressed = Color(0xFFF5A082);
-  static const Color emotionSleepy = Color(0xFFD4C9BC);
-  static const Color emotionGood = Color(0xFFE87D54);
+  static const Color emotionTired = Color(0xFF3C6FF2);     // refined blue
+  static const Color emotionStressed = Color(0xFFE44A6A);  // deep rose (Overwhelmed)
+  static const Color emotionSleepy = Color(0xFF6E5CF6);    // refined violet
+  static const Color emotionGood = Color(0xFF12A594);      // premium teal
 
   // ===== Status Colors =====
   static const Color success = Color(0xFF8B9A7A);

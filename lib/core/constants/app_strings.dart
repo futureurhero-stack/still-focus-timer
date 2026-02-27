@@ -27,25 +27,36 @@ class AppStrings {
   static String selectEmotion(BuildContext context) => _isKorean(context)
       ? '지금 기분이 어떠세요?'
       : 'How do you feel right now?';
+  static String howAreYouFeelingNow(BuildContext context) => _isKorean(context)
+      ? '지금 기분이 어떠세요?'
+      : 'How are you feeling now?';
+
+  // ===== Bottom navigation =====
+  static String navHome(BuildContext context) =>
+      _isKorean(context) ? '홈' : 'Home';
+  static String navStats(BuildContext context) =>
+      _isKorean(context) ? '통계' : 'Stats';
+  static String navSettings(BuildContext context) =>
+      _isKorean(context) ? '설정' : 'Settings';
 
   // ===== Emotions =====
   static String emotionTired(BuildContext context) =>
-      _isKorean(context) ? '하기 싫음' : 'Don\'t want to do it';
+      _isKorean(context) ? '산만함' : 'Distracted';
   static String emotionStressed(BuildContext context) =>
-      _isKorean(context) ? '스트레스' : 'Stressed';
+      _isKorean(context) ? '부담됨' : 'Overwhelmed';
   static String emotionSleepy(BuildContext context) =>
-      _isKorean(context) ? '졸림' : 'Sleepy';
+      _isKorean(context) ? '저에너지' : 'Low Energy';
   static String emotionGood(BuildContext context) =>
-      _isKorean(context) ? '괜찮음' : 'Feeling okay';
+      _isKorean(context) ? '몰입 정점' : 'In the Zone';
 
   static String emotionTiredDesc(BuildContext context) =>
-      _isKorean(context) ? '5~10분만 해봐요' : 'Just 5–10 minutes to start';
+      _isKorean(context) ? '집중이 잘 안 될 때' : 'Hard to stay on task?';
   static String emotionStressedDesc(BuildContext context) =>
-      _isKorean(context) ? '부담 없이 가볍게' : 'Light, no-pressure mode';
+      _isKorean(context) ? '할 일이 너무 많을 때' : 'Too much on your mind?';
   static String emotionSleepyDesc(BuildContext context) =>
-      _isKorean(context) ? '15분 + 움직임 알림' : '15 minutes + movement reminder';
+      _isKorean(context) ? '몸이 무거울 때' : 'Running low today?';
   static String emotionGoodDesc(BuildContext context) =>
-      _isKorean(context) ? '25~40분 딥워크' : '25–40 minutes deep work';
+      _isKorean(context) ? '최상의 컨디션일 때' : 'Ready to dive in?';
 
   // ===== Timer =====
   static String timerTitle(BuildContext context) =>
@@ -94,14 +105,10 @@ class AppStrings {
       _isKorean(context) ? '완료' : 'Completed';
 
   // ===== Give Up Reasons =====
-  static String giveUpReasonTired(BuildContext context) =>
-      _isKorean(context) ? '너무 피곤해요' : 'I\'m too tired';
-  static String giveUpReasonDistracted(BuildContext context) =>
-      _isKorean(context) ? '집중이 안 돼요' : 'I can\'t focus';
-  static String giveUpReasonUrgent(BuildContext context) =>
-      _isKorean(context) ? '급한 일이 생겼어요' : 'Something urgent came up';
-  static String giveUpReasonOther(BuildContext context) =>
-      _isKorean(context) ? '기타' : 'Other';
+  static String giveUpReasonTired(BuildContext context) => "I'm feeling exhausted";
+  static String giveUpReasonDistracted(BuildContext context) => "I can't stay focused";
+  static String giveUpReasonUrgent(BuildContext context) => "Something else came up";
+  static String giveUpReasonOther(BuildContext context) => "Just taking a break";
 
   // ===== Daily Story =====
   static String dailyStoryTitle(BuildContext context) =>
@@ -118,10 +125,20 @@ class AppStrings {
       _isKorean(context) ? '주간 리포트' : 'Weekly report';
   static String monthlyReport(BuildContext context) =>
       _isKorean(context) ? '월간 리포트' : 'Monthly report';
+  static String weeklyFocusTime(BuildContext context) =>
+      _isKorean(context) ? '주간 집중 시간' : 'Weekly focus time';
   static String bestFocusTime(BuildContext context) =>
       _isKorean(context) ? '최적 집중 시간' : 'Best focus time';
   static String totalFocusTime(BuildContext context) =>
       _isKorean(context) ? '총 집중 시간' : 'Total focus time';
+  static String focusTime(BuildContext context) =>
+      _isKorean(context) ? '집중 시간' : 'Focus time';
+  static String sessions(BuildContext context) =>
+      _isKorean(context) ? '세션' : 'Sessions';
+  static String goalRate(BuildContext context) =>
+      _isKorean(context) ? '목표 달성률' : 'Goal rate';
+  static String bestHour(BuildContext context) =>
+      _isKorean(context) ? '최적 시간' : 'Best hour';
   static String completionRate(BuildContext context) =>
       _isKorean(context) ? '완료율' : 'Completion rate';
 
@@ -140,8 +157,10 @@ class AppStrings {
       _isKorean(context) ? '설정' : 'Settings';
   static String settingsLanguage(BuildContext context) =>
       _isKorean(context) ? '언어' : 'Language';
+  static String quickStart(BuildContext context) =>
+      _isKorean(context) ? '퀵 스타트' : 'Quick Start';
   static String defaultDuration(BuildContext context) =>
-      _isKorean(context) ? '기본 세션 시간' : 'Default session length';
+      _isKorean(context) ? '나의 루틴' : 'Start my routine';
   static String defaultSessionSubtitle(BuildContext context) =>
       _isKorean(context) ? '기본 집중 세션 시간' : 'Default focus session length';
   static String notifications(BuildContext context) =>

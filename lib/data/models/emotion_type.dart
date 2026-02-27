@@ -35,6 +35,20 @@ extension EmotionTypeExtension on EmotionType {
     }
   }
 
+  /// 아이콘 반환 (홈 화면과 일치)
+  IconData get icon {
+    switch (this) {
+      case EmotionType.tired:
+        return Icons.blur_on_rounded;
+      case EmotionType.stressed:
+        return Icons.sentiment_very_dissatisfied_rounded;
+      case EmotionType.sleepy:
+        return Icons.battery_3_bar_rounded;
+      case EmotionType.good:
+        return Icons.track_changes_rounded;
+    }
+  }
+
   /// Localized emotion label
   String label(BuildContext context) {
     switch (this) {

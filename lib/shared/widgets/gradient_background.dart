@@ -1,62 +1,26 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
-import 'app_background.dart';
 
-/// 배경 위젯 - 이미지 배경 또는 그라디언트 폴백
+/// Simple global background wrapper used by multiple screens.
+/// Matches the soft wave / pale gradient used in the new Home & Reflection UIs.
 class GradientBackground extends StatelessWidget {
   final Widget child;
-  final bool useImageBackground;
 
-  const GradientBackground({
-    super.key,
-    required this.child,
-    this.useImageBackground = false,
-  });
+  const GradientBackground({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    if (useImageBackground) {
-      return AppBackground(
-        showDecoration: false,
-        child: child,
-      );
-    }
     return Container(
       decoration: const BoxDecoration(
-        gradient: AppColors.backgroundGradient,
-      ),
-      child: child,
-    );
-  }
-}
-
-/// 배경 장식용 오브 위젯
-class BackgroundOrb extends StatelessWidget {
-  final Color color;
-  final double size;
-  final Alignment alignment;
-
-  const BackgroundOrb({
-    super.key,
-    required this.color,
-    required this.size,
-    required this.alignment,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: [
-            color.withValues(alpha: 0.3),
-            color.withValues(alpha: 0.0),
+            Color(0xFFF7F8FC),
+            Color(0xFFF3F5FB),
           ],
         ),
       ),
+      child: child,
     );
   }
 }

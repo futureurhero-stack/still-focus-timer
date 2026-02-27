@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../shared/widgets/svg_icon.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../data/models/daily_stats_model.dart';
@@ -18,10 +19,17 @@ class WeeklyChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(48),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(48),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,27 +37,35 @@ class WeeklyChart extends StatelessWidget {
           // Title
           Row(
             children: [
-              SvgIcon(
-                assetPath: AppAssets.iconStats,
-                size: 48,
-                color: AppColors.accent,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.insert_chart_outlined_rounded,
+                  size: 20,
+                  color: AppColors.accent,
+                ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Text(
-                 'Weekly focus time',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                AppStrings.weeklyFocusTime(context),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF121318),
+                  letterSpacing: -0.5,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 48),
+          const SizedBox(height: 32),
 
           // Chart
           SizedBox(
-            height: 400,
+            height: 220,
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
@@ -57,20 +73,22 @@ class WeeklyChart extends StatelessWidget {
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
+                    tooltipBgColor: const Color(0xFF121318),
                     tooltipPadding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
+                      horizontal: 12,
+                      vertical: 8,
                     ),
                     tooltipMargin: 8,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                       final stat = stats[groupIndex];
-                       return BarTooltipItem(
-                         '${stat.totalFocusMinutes} min',
-                         const TextStyle(
-                           color: AppColors.textPrimary,
-                           fontWeight: FontWeight.bold,
-                         ),
-                       );
+                      final stat = stats[groupIndex];
+                      return BarTooltipItem(
+                        '${stat.totalFocusMinutes}m',
+                        const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -84,39 +102,48 @@ class WeeklyChart extends StatelessWidget {
                         if (index >= 0 && index < stats.length) {
                           final date = stats[index].date;
                           final isToday = AppDateUtils.isToday(date);
+                          final fullName =
+                              AppDateUtils.getWeekdayName(date.weekday);
+                          final label = fullName.length <= 3
+                              ? fullName
+                              : fullName.substring(0, 3);
                           return Padding(
-                            padding: const EdgeInsets.only(top: 16),
+                            padding: const EdgeInsets.only(top: 12),
                             child: Text(
-                              AppDateUtils.getWeekdayName(date.weekday),
+                              label,
                               style: TextStyle(
                                 color: isToday
-                                    ? AppColors.primary
-                                    : AppColors.textMuted,
-                                fontSize: 24,
+                                    ? AppColors.accent
+                                    : const Color(0xFF121318)
+                                        .withValues(alpha: 0.3),
+                                fontSize: 11,
                                 fontWeight: isToday
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
+                                    ? FontWeight.w900
+                                    : FontWeight.w600,
                               ),
                             ),
                           );
                         }
                         return const Text('');
                       },
-                      reservedSize: 30,
+                      reservedSize: 32,
                     ),
                   ),
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: 80,
+                      reservedSize: 40,
+                      interval: _getMaxY() / 4,
                       getTitlesWidget: (value, meta) {
-                         return Text(
-                           '${value.toInt()} min',
-                           style: const TextStyle(
-                             color: AppColors.textMuted,
-                             fontSize: 20,
-                           ),
-                         );
+                        if (value == 0) return const Text('');
+                        return Text(
+                          '${value.toInt()}m',
+                          style: TextStyle(
+                            color: const Color(0xFF121318).withValues(alpha: 0.2),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -134,28 +161,14 @@ class WeeklyChart extends StatelessWidget {
                   horizontalInterval: _getMaxY() / 4,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: AppColors.surfaceLight,
+                      color: const Color(0xFF121318).withValues(alpha: 0.05),
                       strokeWidth: 1,
-                      dashArray: [5, 5],
                     );
                   },
                 ),
                 barGroups: _generateBarGroups(),
               ),
             ),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Legend
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _LegendItem(
-                color: AppColors.primary,
-                label: 'Focus time',
-              ),
-            ],
           ),
         ],
       ),
@@ -181,60 +194,18 @@ class WeeklyChart extends StatelessWidget {
         barRods: [
           BarChartRodData(
             toY: stat.totalFocusMinutes.toDouble(),
-            gradient: isToday
-                ? AppColors.primaryGradient
-                : LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      AppColors.accent.withValues(alpha: 0.5),
-                      AppColors.accent.withValues(alpha: 0.8),
-                    ],
-                  ),
-            width: 56,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(16),
+            color: isToday ? AppColors.accent : AppColors.accent.withValues(alpha: 0.2),
+            width: 16,
+            borderRadius: BorderRadius.circular(4),
+            backDrawRodData: BackgroundBarChartRodData(
+              show: true,
+              toY: _getMaxY(),
+              color: const Color(0xFF121318).withValues(alpha: 0.03),
             ),
           ),
         ],
       );
     }).toList();
-  }
-}
-
-/// 범례 아이템
-class _LegendItem extends StatelessWidget {
-  final Color color;
-  final String label;
-
-  const _LegendItem({
-    required this.color,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(6),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 24,
-            color: AppColors.textSecondary,
-          ),
-        ),
-      ],
-    );
   }
 }
 

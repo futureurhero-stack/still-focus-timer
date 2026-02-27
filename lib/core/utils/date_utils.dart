@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 /// 날짜/시간 관련 유틸리티 함수들
@@ -25,17 +26,31 @@ class AppDateUtils {
     return '$minutes:$seconds';
   }
 
-  /// 분을 읽기 쉬운 형식으로 변환
-  static String formatMinutes(int minutes) {
-    if (minutes < 60) {
-      return '$minutes분';
+  /// 분을 읽기 쉬운 형식으로 변환 (로케일별)
+  static String formatMinutes(BuildContext context, int minutes) {
+    final isKo = Localizations.localeOf(context).languageCode == 'ko';
+
+    if (isKo) {
+      if (minutes < 60) {
+        return '$minutes분';
+      }
+      final hours = minutes ~/ 60;
+      final mins = minutes % 60;
+      if (mins == 0) {
+        return '$hours시간';
+      }
+      return '$hours시간 $mins분';
+    } else {
+      if (minutes < 60) {
+        return '$minutes min';
+      }
+      final hours = minutes ~/ 60;
+      final mins = minutes % 60;
+      if (mins == 0) {
+        return '${hours}h';
+      }
+      return '${hours}h ${mins}m';
     }
-    final hours = minutes ~/ 60;
-    final mins = minutes % 60;
-    if (mins == 0) {
-      return '$hours시간';
-    }
-    return '$hours시간 $mins분';
   }
 
   /// 오늘 날짜인지 확인
