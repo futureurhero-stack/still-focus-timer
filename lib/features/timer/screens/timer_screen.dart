@@ -242,18 +242,37 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
             .fadeIn(duration: 400.ms)
             .slideX(begin: -0.1, end: 0),
 
-        // Give Up Button
-        TextButton(
-          onPressed: _showGiveUpDialog,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          ),
-          child: Text(
-            AppStrings.giveUpButton(context),
-            style: TextStyle(
-              color: Colors.black.withOpacity(0.35),
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+        // Give Up Button (Stop for today) — 버튼 형태
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _showGiveUpDialog,
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: const Color(0xFF121318).withValues(alpha: 0.12),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Text(
+                AppStrings.giveUpButton(context),
+                style: TextStyle(
+                  color: const Color(0xFF121318).withValues(alpha: 0.6),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
         )

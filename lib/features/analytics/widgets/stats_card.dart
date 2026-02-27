@@ -114,9 +114,9 @@ class StatsCard extends StatelessWidget {
                   Text(
                     label.toUpperCase(),
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 13,
                       fontWeight: FontWeight.w900,
-                      color: baseText.withValues(alpha: 0.35),
+                      color: baseText.withValues(alpha: 0.5),
                       letterSpacing: 1.2,
                     ),
                   ),

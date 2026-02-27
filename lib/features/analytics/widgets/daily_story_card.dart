@@ -18,8 +18,8 @@ class DailyStoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const glowColor = Color(0xFF6E5CF6);
-    final glowB = glowColor.withValues(alpha: 0.05);
+    const glowColor = Color(0xFFE87D54);
+    final glowB = glowColor.withValues(alpha: 0.04);
 
     return Container(
       width: double.infinity,
@@ -33,7 +33,7 @@ class DailyStoryCard extends StatelessWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.75), width: 1),
+        border: Border.all(color: const Color(0xFF121318).withValues(alpha: 0.08), width: 1.2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.055),
@@ -55,7 +55,7 @@ class DailyStoryCard extends StatelessWidget {
                 height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: glowColor.withValues(alpha: 0.1),
+                  color: glowColor.withValues(alpha: 0.06),
                 ),
               ),
             ),

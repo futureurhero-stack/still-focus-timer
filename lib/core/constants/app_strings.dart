@@ -43,7 +43,7 @@ class AppStrings {
   static String emotionTired(BuildContext context) =>
       _isKorean(context) ? '산만함' : 'Distracted';
   static String emotionStressed(BuildContext context) =>
-      _isKorean(context) ? '부담됨' : 'Overwhelmed';
+      _isKorean(context) ? '과부하' : 'Overwhelmed';
   static String emotionSleepy(BuildContext context) =>
       _isKorean(context) ? '저에너지' : 'Low Energy';
   static String emotionGood(BuildContext context) =>
@@ -105,10 +105,14 @@ class AppStrings {
       _isKorean(context) ? '완료' : 'Completed';
 
   // ===== Give Up Reasons =====
-  static String giveUpReasonTired(BuildContext context) => "I'm feeling exhausted";
-  static String giveUpReasonDistracted(BuildContext context) => "I can't stay focused";
-  static String giveUpReasonUrgent(BuildContext context) => "Something else came up";
-  static String giveUpReasonOther(BuildContext context) => "Just taking a break";
+  static String giveUpReasonTired(BuildContext context) =>
+      _isKorean(context) ? '너무 피곤해요' : "I'm feeling exhausted";
+  static String giveUpReasonDistracted(BuildContext context) =>
+      _isKorean(context) ? '집중이 잘 안 돼요' : "I can't stay focused";
+  static String giveUpReasonUrgent(BuildContext context) =>
+      _isKorean(context) ? '급한 일이 생겼어요' : "Something else came up";
+  static String giveUpReasonOther(BuildContext context) =>
+      _isKorean(context) ? '잠깐 쉬고 싶어요' : "Just taking a break";
 
   // ===== Daily Story =====
   static String dailyStoryTitle(BuildContext context) =>
@@ -158,17 +162,21 @@ class AppStrings {
   static String settingsLanguage(BuildContext context) =>
       _isKorean(context) ? '언어' : 'Language';
   static String quickStart(BuildContext context) =>
-      _isKorean(context) ? '퀵 스타트' : 'Quick Start';
+      _isKorean(context) ? '빠른 시작' : 'Quick Start';
   static String defaultDuration(BuildContext context) =>
       _isKorean(context) ? '나의 루틴' : 'Start my routine';
   static String defaultSessionSubtitle(BuildContext context) =>
       _isKorean(context) ? '기본 집중 세션 시간' : 'Default focus session length';
   static String notifications(BuildContext context) =>
-      _isKorean(context) ? '알림 설정' : 'Notifications';
+      _isKorean(context) ? '알림' : 'Notifications';
   static String darkMode(BuildContext context) =>
       _isKorean(context) ? '다크 모드' : 'Dark mode';
   static String about(BuildContext context) =>
-      _isKorean(context) ? '앱 정보' : 'About app';
+      _isKorean(context) ? '정보' : 'About';
+  static String sessionSettings(BuildContext context) =>
+      _isKorean(context) ? '세션 설정' : 'Session settings';
+  static String dataManagement(BuildContext context) =>
+      _isKorean(context) ? '데이터 관리' : 'Data management';
 
   // ===== Common =====
   static String confirm(BuildContext context) =>

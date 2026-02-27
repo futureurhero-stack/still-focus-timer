@@ -79,7 +79,7 @@ class FocusFlowApp extends ConsumerWidget {
       title: AppStrings.appName(context),
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      // 현재 선택된 언어 (기본: 영어)
+      // 현재 선택된 언어 (설치 시 기기 언어 자동, Settings에서 변경 가능)
       locale: locale,
       // 지원하는 언어 목록
       supportedLocales: const [

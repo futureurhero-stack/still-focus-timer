@@ -6,8 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../data/repositories/session_repository.dart';
-import '../../../data/repositories/task_repository.dart';
-import '../../../data/models/task_model.dart';
+import '../../../data/models/emotion_type.dart';
 
 /// 회고 화면
 class ReflectionScreen extends StatefulWidget {
@@ -29,9 +28,6 @@ class ReflectionScreen extends StatefulWidget {
 class _ReflectionScreenState extends State<ReflectionScreen> {
   final _textController = TextEditingController();
   final _sessionRepository = SessionRepository();
-  final _taskRepository = TaskRepository();
-  List<TaskModel> _recentTasks = [];
-  bool _isLoading = true;
   bool _isSaving = false;
 
   bool _isKorean(BuildContext context) =>
@@ -40,21 +36,12 @@ class _ReflectionScreenState extends State<ReflectionScreen> {
   @override
   void initState() {
     super.initState();
-    _loadRecentTasks();
   }
 
   @override
   void dispose() {
     _textController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadRecentTasks() async {
-    final tasks = await _taskRepository.getRecentTasks(limit: 5);
-    setState(() {
-      _recentTasks = tasks;
-      _isLoading = false;
-    });
   }
 
   void _selectTask(String description) {
@@ -119,13 +106,8 @@ class _ReflectionScreenState extends State<ReflectionScreen> {
                   _buildResultCard(),
                   const SizedBox(height: 32),
 
-                  // Reflection input
-                  _buildReflectionInput(),
-                  const SizedBox(height: 24),
-
-                  // Recent task suggestions
-                  if (!_isLoading && _recentTasks.isNotEmpty)
-                    _buildRecentTaskSuggestions(),
+                  // Reflection Group
+                  _buildReflectionSection(),
 
                   const SizedBox(height: 48),
 
@@ -192,18 +174,37 @@ class _ReflectionScreenState extends State<ReflectionScreen> {
             .fadeIn(duration: 400.ms)
             .slideX(begin: -0.1, end: 0),
 
-        // Skip Button
-        TextButton(
-          onPressed: _skip,
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF121318).withValues(alpha: 0.35),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
-          child: Text(
-            AppStrings.reflectionSkip(context),
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
+        // Skip Button — 버튼 형태
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _skip,
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: const Color(0xFF121318).withValues(alpha: 0.12),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Text(
+                AppStrings.reflectionSkip(context),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF121318).withValues(alpha: 0.6),
+                ),
+              ),
             ),
           ),
         )
@@ -307,7 +308,9 @@ class _ReflectionScreenState extends State<ReflectionScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _buildStatusBadge(
-                        widget.isCompleted ? 'Goal Reached' : 'Session Ended',
+                        Localizations.localeOf(context).languageCode == 'ko'
+                            ? (widget.isCompleted ? '목표 달성' : '세션 종료')
+                            : (widget.isCompleted ? 'Goal Reached' : 'Session Ended'),
                         themeColor,
                       ),
                     ],
@@ -354,44 +357,167 @@ class _ReflectionScreenState extends State<ReflectionScreen> {
     );
   }
 
-  Widget _buildReflectionInput() {
+  Widget _buildReflectionSection() {
+    const glowB = AppColors.accent;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          AppStrings.reflectionQuestion(context),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF121318),
-            letterSpacing: -0.5,
+        Padding(
+          padding: const EdgeInsets.only(left: 8, bottom: 12),
+          child: Text(
+            AppStrings.reflectionQuestion(context).toUpperCase(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF121318).withValues(alpha: 0.35),
+              letterSpacing: 1.2,
+            ),
           ),
         ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _textController,
-          maxLines: 4,
-          style: const TextStyle(
-            color: Color(0xFF121318),
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFFFFFFFF),
+                glowB.withValues(alpha: 0.04),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.75), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.055),
+                blurRadius: 30,
+                offset: const Offset(0, 18),
+              ),
+            ],
           ),
-          decoration: InputDecoration(
-            hintText: AppStrings.reflectionHint(context),
-            hintStyle:
-                TextStyle(color: const Color(0xFF121318).withValues(alpha: 0.25)),
-            filled: true,
-            fillColor: Colors.white,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24),
-              borderSide:
-                  BorderSide(color: Colors.black.withValues(alpha: 0.05)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: Stack(
+              children: [
+                // Background glow
+                Positioned(
+                  left: -30,
+                  top: -30,
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: glowB.withValues(alpha: 0.06),
+                    ),
+                  ),
+                ),
+                // Bottom accent bar
+                Positioned(
+                  left: 20,
+                  right: 20,
+                  bottom: 0,
+                  child: Container(
+                    height: 3,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(99)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          glowB.withValues(alpha: 0.6),
+                          glowB.withValues(alpha: 0.1),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 1) TextField
+                    Padding(
+                      padding: const EdgeInsets.all(28),
+                      child: TextField(
+                        controller: _textController,
+                        maxLines: 4,
+                        style: const TextStyle(
+                          color: Color(0xFF121318),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: AppStrings.reflectionHint(context),
+                          hintStyle: TextStyle(
+                            color: const Color(0xFF121318).withValues(alpha: 0.25),
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ),
+
+                    // 2) Suggestions — Overwhelmed, Distracted, Low Energy, In the Zone 순서
+                    Divider(
+                      height: 1,
+                      color: const Color(0xFF121318).withValues(alpha: 0.05),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(28),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppStrings.recentTasks(context),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF121318).withValues(alpha: 0.4),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: [
+                              EmotionType.stressed,
+                              EmotionType.tired,
+                              EmotionType.sleepy,
+                              EmotionType.good,
+                            ].map((emotion) {
+                              return GestureDetector(
+                                onTap: () => _selectTask(emotion.label(context)),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF7F8FC),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: const Color(0xFF121318).withValues(alpha: 0.05),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    emotion.label(context),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF121318),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24),
-              borderSide: const BorderSide(color: AppColors.accent, width: 2),
-            ),
-            contentPadding: const EdgeInsets.all(24),
           ),
         ),
       ],
@@ -399,55 +525,6 @@ class _ReflectionScreenState extends State<ReflectionScreen> {
         .animate()
         .fadeIn(duration: 400.ms, delay: 200.ms)
         .slideY(begin: 0.1, end: 0);
-  }
-
-  Widget _buildRecentTaskSuggestions() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppStrings.recentTasks(context),
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF121318).withValues(alpha: 0.35),
-            letterSpacing: 0.2,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: _recentTasks.map((task) {
-            return GestureDetector(
-              onTap: () => _selectTask(task.description),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border:
-                      Border.all(color: Colors.black.withValues(alpha: 0.05)),
-                ),
-                child: Text(
-                  task.description,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF121318),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    )
-        .animate()
-        .fadeIn(duration: 400.ms, delay: 300.ms);
   }
 
     Widget _buildButtons() {
@@ -500,19 +577,39 @@ class _ReflectionScreenState extends State<ReflectionScreen> {
 
         const SizedBox(height: 20),
 
-        TextButton(
-          onPressed: _goHome,
-          style: TextButton.styleFrom(
-            foregroundColor:
-                const Color(0xFF121318).withValues(alpha: 0.5),
-          ),
-          child: Text(
-            Localizations.localeOf(context).languageCode == 'ko'
-                ? '홈으로 돌아가기'
-                : 'Back to Home',
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
+        // Back to Home — 버튼 형태
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _goHome,
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: const Color(0xFF121318).withValues(alpha: 0.12),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Text(
+                Localizations.localeOf(context).languageCode == 'ko'
+                    ? '홈으로 돌아가기'
+                    : 'Back to Home',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF121318).withValues(alpha: 0.6),
+                ),
+              ),
             ),
           ),
         ).animate()

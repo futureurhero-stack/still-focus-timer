@@ -36,6 +36,7 @@ dependencies:
   intl: ^0.20.2
   uuid: ^4.2.1
   share_plus: ^7.2.1
+  package_info_plus: ^8.0.0
 
   # 로컬라이제이션 (다국어 지원)
   flutter_localizations:

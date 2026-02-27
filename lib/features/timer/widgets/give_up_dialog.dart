@@ -22,6 +22,8 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isKo = Localizations.localeOf(context).languageCode == 'ko';
+
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -86,9 +88,9 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                     const SizedBox(height: 20),
 
                     // Title
-                    const Text(
-                      'Taking a break?',
-                      style: TextStyle(
+                    Text(
+                      isKo ? '잠시 쉬어갈까요?' : 'Taking a break?',
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
                         color: Color(0xFF121318),
@@ -100,7 +102,9 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
 
                     // Subtitle
                     Text(
-                      "It's okay! Rest is part of the process.\nYour progress is always valuable.",
+                      isKo
+                          ? '괜찮아요! 쉬는 것도 과정의 일부예요.\n지금까지 쌓인 진전은 여전히 소중해요.'
+                          : "It's okay! Rest is part of the process.\nYour progress is always valuable.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
@@ -116,7 +120,7 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'WHY ARE YOU STOPPING?',
+                        isKo ? '왜 멈추려고 하나요?' : 'WHY ARE YOU STOPPING?',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
@@ -155,9 +159,9 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                                 side: BorderSide(color: Colors.black.withOpacity(0.06)),
                               ),
                             ),
-                            child: const Text(
-                              'Keep going',
-                              style: TextStyle(
+                            child: Text(
+                              isKo ? '계속하기' : 'Keep going',
+                              style: const TextStyle(
                                 color: Color(0xFF121318),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -192,9 +196,9 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                               ),
-                              child: const Text(
-                                'End session',
-                                style: TextStyle(
+                              child: Text(
+                                isKo ? '세션 종료' : 'End session',
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                 ),

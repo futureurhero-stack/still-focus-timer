@@ -103,7 +103,7 @@ class WeeklyChart extends StatelessWidget {
                           final date = stats[index].date;
                           final isToday = AppDateUtils.isToday(date);
                           final fullName =
-                              AppDateUtils.getWeekdayName(date.weekday);
+                              AppDateUtils.getWeekdayName(context, date.weekday);
                           final label = fullName.length <= 3
                               ? fullName
                               : fullName.substring(0, 3);
@@ -139,9 +139,9 @@ class WeeklyChart extends StatelessWidget {
                         return Text(
                           '${value.toInt()}m',
                           style: TextStyle(
-                            color: const Color(0xFF121318).withValues(alpha: 0.2),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF121318).withValues(alpha: 0.4),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
                           ),
                         );
                       },

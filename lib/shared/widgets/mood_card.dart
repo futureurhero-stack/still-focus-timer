@@ -39,17 +39,19 @@ class _MoodCardState extends State<MoodCard> {
     }
   }
 
-  /// 세션 시간 범위 텍스트
-  String _getSessionRange() {
+  /// 세션 시간 범위 텍스트 (언어별)
+  String _getSessionRange(BuildContext context) {
+    final isKo = Localizations.localeOf(context).languageCode == 'ko';
+
     switch (widget.emotion) {
       case EmotionType.tired:
-        return '5-10m session';
+        return isKo ? '5-10분 세션' : '5-10m session';
       case EmotionType.stressed:
-        return '10-15m session';
+        return isKo ? '10-15분 세션' : '10-15m session';
       case EmotionType.sleepy:
-        return '15-20m session';
+        return isKo ? '15-20분 세션' : '15-20m session';
       case EmotionType.good:
-        return '20-25m session';
+        return isKo ? '20-25분 세션' : '20-25m session';
     }
   }
 
@@ -135,7 +137,7 @@ class _MoodCardState extends State<MoodCard> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _getSessionRange(),
+                  _getSessionRange(context),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,

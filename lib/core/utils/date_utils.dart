@@ -104,10 +104,12 @@ class AppDateUtils {
     }
   }
 
-  /// 요일을 한글로 반환
-  static String getWeekdayName(int weekday) {
-    const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
-    return weekdays[weekday - 1];
+  /// 요일을 현재 로케일에 맞게 반환 (한글: 월화수…, 영어: Mon, Tue…)
+  static String getWeekdayName(BuildContext context, int weekday) {
+    final locale = Localizations.localeOf(context).languageCode;
+    // weekday 1=월요일, 7=일요일. 2024-01-01 = 월요일
+    final refDate = DateTime(2024, 1, 1).add(Duration(days: weekday - 1));
+    return DateFormat('E', locale).format(refDate);
   }
 
   /// 오늘의 시작 시간 (00:00:00)

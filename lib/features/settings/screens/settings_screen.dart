@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
@@ -25,11 +26,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _db = DatabaseService();
   int _defaultDuration = 10;
   bool _notificationsEnabled = true;
+  String _version = '—';
 
   @override
   void initState() {
     super.initState();
     _loadSettings();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        _version = info.version;
+        if (info.buildNumber.isNotEmpty) {
+          _version = '${info.version}+${info.buildNumber}';
+        }
+      });
+    }
   }
 
   Future<void> _loadSettings() async {
@@ -177,7 +192,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(height: 32),
                           // Focus session defaults
                           _buildSection(
-                            title: 'Session settings',
+                            title: AppStrings.sessionSettings(context),
                             children: [
                               _buildDurationSetting(),
                             ],
@@ -188,12 +203,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(height: 32),
                           // Notification settings
                           _buildSection(
-                            title: 'Notifications',
+                            title: AppStrings.notifications(context),
                             children: [
                               _buildSwitchTile(
                                 icon: Icons.notifications_active_rounded,
-                                title: 'Enable notifications',
-                                subtitle: 'Get notified when a session ends',
+                                title: Localizations.localeOf(context).languageCode == 'ko'
+                                    ? '알림 허용'
+                                    : 'Enable notifications',
+                                subtitle: Localizations.localeOf(context).languageCode == 'ko'
+                                    ? '세션 종료 알림'
+                                    : 'Get notified when a session ends',
                                 value: _notificationsEnabled,
                                 onChanged: _toggleNotifications,
                                 color: const Color(0xFF3C6FF2),
@@ -206,18 +225,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(height: 32),
                           // App info
                           _buildSection(
-                            title: 'About',
+                            title: AppStrings.about(context),
                             children: [
                               _buildInfoTile(
                                 icon: Icons.info_outline_rounded,
-                                title: 'Version',
-                                value: '2.0.0',
+                                title: Localizations.localeOf(context).languageCode == 'ko'
+                                    ? '버전'
+                                    : 'Version',
+                                value: _version,
                                 color: const Color(0xFF6E5CF6),
                               ),
                               _buildInfoTile(
                                 icon: Icons.code_rounded,
-                                title: 'Developer',
-                                value: 'FocusFlow Team',
+                                title: Localizations.localeOf(context).languageCode == 'ko'
+                                    ? '개발자'
+                                    : 'Developer',
+                                value: 'Still — Focus Timer',
                                 color: const Color(0xFF10B981),
                               ),
                             ],
@@ -228,12 +251,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(height: 32),
                           // Data management
                           _buildSection(
-                            title: 'Data management',
+                            title: AppStrings.dataManagement(context),
                             children: [
                               _buildActionTile(
                                 icon: Icons.delete_forever_rounded,
-                                title: 'Delete all data',
-                                subtitle: 'Remove all history and settings',
+                                title: Localizations.localeOf(context).languageCode == 'ko'
+                                    ? '데이터 전부 삭제'
+                                    : 'Delete all data',
+                                subtitle: Localizations.localeOf(context).languageCode == 'ko'
+                                    ? '모든 기록과 설정 지우기'
+                                    : 'Remove all history and settings',
                                 isDestructive: true,
                                 onTap: _clearAllData,
                               ),
@@ -382,7 +409,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ],
             ),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.75), width: 1),
+            border: Border.all(color: const Color(0xFF121318).withValues(alpha: 0.08), width: 1.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.055),

@@ -114,7 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           accent: AppColors.emotionStressed,
                           onTap: () => _goTimer(
                             duration: 15,
-                            task: "${AppStrings.emotionStressed(context)} session",
+                            task:
+                                "${AppStrings.emotionStressed(context)} ${Localizations.localeOf(context).languageCode == 'ko' ? '세션' : 'session'}",
                             emotion: EmotionType.stressed,
                           ),
                         ),
@@ -126,7 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           accent: AppColors.emotionTired,
                           onTap: () => _goTimer(
                             duration: 20,
-                            task: "${AppStrings.emotionTired(context)} session",
+                            task:
+                                "${AppStrings.emotionTired(context)} ${Localizations.localeOf(context).languageCode == 'ko' ? '세션' : 'session'}",
                             emotion: EmotionType.tired,
                           ),
                         ),
@@ -138,7 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           accent: AppColors.emotionSleepy,
                           onTap: () => _goTimer(
                             duration: 10,
-                            task: "${AppStrings.emotionSleepy(context)} session",
+                            task:
+                                "${AppStrings.emotionSleepy(context)} ${Localizations.localeOf(context).languageCode == 'ko' ? '세션' : 'session'}",
                             emotion: EmotionType.sleepy,
                           ),
                         ),
@@ -229,12 +232,18 @@ class _Quote {
   final String author;
   final String title;
   final String subtitle;
+  final String? authorKo;
+  final String? titleKo;
+  final String? subtitleKo;
 
   const _Quote({
     required this.id,
     required this.author,
     required this.title,
     required this.subtitle,
+    this.authorKo,
+    this.titleKo,
+    this.subtitleKo,
   });
 
   factory _Quote.fromJson(Map<String, dynamic> json) {
@@ -243,6 +252,9 @@ class _Quote {
       author: json['author'] as String? ?? '',
       title: json['title'] as String? ?? '',
       subtitle: json['subtitle'] as String? ?? '',
+      authorKo: json['authorKo'] as String?,
+      titleKo: json['titleKo'] as String?,
+      subtitleKo: json['subtitleKo'] as String?,
     );
   }
 }
@@ -254,7 +266,15 @@ class _QuoteBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rawSubtitle = quote.subtitle;
+    final isKo = Localizations.localeOf(context).languageCode == 'ko';
+    final useKo = isKo &&
+        quote.titleKo != null &&
+        quote.subtitleKo != null &&
+        quote.authorKo != null;
+
+    final displayTitle = useKo ? quote.titleKo! : quote.title;
+    final displayAuthor = useKo ? quote.authorKo! : quote.author;
+    final rawSubtitle = useKo ? quote.subtitleKo! : quote.subtitle;
     final cutIndex = rawSubtitle.lastIndexOf(' - ');
     final displaySubtitle =
         cutIndex > 0 ? rawSubtitle.substring(0, cutIndex).trim() : rawSubtitle;
@@ -277,7 +297,7 @@ class _QuoteBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            quote.title,
+            displayTitle,
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
@@ -296,7 +316,7 @@ class _QuoteBanner extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            '- ${quote.author} -',
+            '- $displayAuthor -',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w500,
