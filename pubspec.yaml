@@ -2,7 +2,7 @@ name: momo
 description: "FocusFlow - 행동 기반 포모도로 코치"
 publish_to: "none"
 
-version: 2.0.0+8
+version: 2.2.0+10
 
 environment:
   sdk: ^3.10.4
@@ -37,6 +37,10 @@ dependencies:
   uuid: ^4.2.1
   share_plus: ^7.2.1
   package_info_plus: ^8.0.0
+
+  # Firebase
+  firebase_core: ^4.4.0
+  firebase_analytics: ^12.1.2
 
   # 로컬라이제이션 (다국어 지원)
   flutter_localizations:
@@ -76,7 +80,7 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: false  # Android만 설정
-  image_path: "assets/icons/app_icon.png"  # logo.png 사용
+  image_path: "assets/icons/app_icon.png"  # Minimalist Brain & Timer 아이콘 사용
   # Android 아이콘 설정
   android_adaptive_icon_background: "#E87D54"  # Still Focus Accent (산뜻한 오렌지)
   # android_adaptive_icon_foreground는 image_path를 자동으로 사용

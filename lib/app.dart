@@ -81,10 +81,10 @@ class FocusFlowApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       // 현재 선택된 언어 (설치 시 기기 언어 자동, Settings에서 변경 가능)
       locale: locale,
-      // 지원하는 언어 목록
+      // 지원하는 언어 목록 (미지원 기기 언어일 때 첫 항목 사용 → 영어 기본 아님)
       supportedLocales: const [
-        Locale('en'),
         Locale('ko'),
+        Locale('en'),
       ],
       // Flutter 기본 로컬라이제이션 델리게이트 등록
       localizationsDelegates: const [
@@ -92,17 +92,17 @@ class FocusFlowApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      // 기기 언어가 지원되지 않을 경우 영어로 fallback
-      localeResolutionCallback: (deviceLocale, supportedLocales) {
-        if (deviceLocale == null) {
-          return const Locale('en');
+      // 기기/선택 언어가 지원 목록에 없을 때만 fallback (영어 기본 사용 안 함, 지원 목록 첫 항목 사용)
+      localeResolutionCallback: (requestedLocale, supportedLocales) {
+        if (requestedLocale == null || supportedLocales.isEmpty) {
+          return supportedLocales.isNotEmpty ? supportedLocales.first : const Locale('en');
         }
         for (final locale in supportedLocales) {
-          if (locale.languageCode == deviceLocale.languageCode) {
+          if (locale.languageCode == requestedLocale.languageCode) {
             return locale;
           }
         }
-        return const Locale('en');
+        return supportedLocales.first;
       },
       routerConfig: router,
     );

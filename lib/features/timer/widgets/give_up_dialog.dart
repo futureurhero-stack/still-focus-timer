@@ -34,7 +34,7 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.12),
+              color: Colors.black.withValues(alpha:0.12),
               blurRadius: 40,
               offset: const Offset(0, 20),
             ),
@@ -55,8 +55,8 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.accent.withOpacity(0.12),
-                        AppColors.accent.withOpacity(0),
+                        AppColors.accent.withValues(alpha:0.12),
+                        AppColors.accent.withValues(alpha:0),
                       ],
                     ),
                   ),
@@ -72,7 +72,7 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                     Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: AppColors.accent.withOpacity(0.1),
+                        color: AppColors.accent.withValues(alpha:0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -110,7 +110,7 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                         fontSize: 15,
                         height: 1.5,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF121318).withOpacity(0.5),
+                        color: const Color(0xFF121318).withValues(alpha:0.5),
                       ),
                     ),
 
@@ -124,7 +124,7 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.accent.withOpacity(0.6),
+                          color: AppColors.accent.withValues(alpha:0.6),
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -156,7 +156,7 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
-                                side: BorderSide(color: Colors.black.withOpacity(0.06)),
+                                side: BorderSide(color: Colors.black.withValues(alpha:0.06)),
                               ),
                             ),
                             child: Text(
@@ -176,7 +176,7 @@ class _GiveUpDialogState extends State<GiveUpDialog> {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.accent.withOpacity(0.3),
+                                  color: AppColors.accent.withValues(alpha:0.3),
                                   blurRadius: 15,
                                   offset: const Offset(0, 8),
                                 ),
@@ -243,16 +243,16 @@ class _ReasonOption extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.accent.withOpacity(0.08)
+              ? AppColors.accent.withValues(alpha:0.08)
               : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? AppColors.accent : Colors.black.withOpacity(0.05),
+            color: isSelected ? AppColors.accent : Colors.black.withValues(alpha:0.05),
             width: isSelected ? 2 : 1,
           ),
           boxShadow: isSelected ? null : [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha:0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -263,7 +263,7 @@ class _ReasonOption extends StatelessWidget {
             Icon(
               reason.icon,
               size: 24,
-              color: isSelected ? AppColors.accent : const Color(0xFF121318).withOpacity(0.3),
+              color: isSelected ? AppColors.accent : const Color(0xFF121318).withValues(alpha:0.3),
             ),
             const SizedBox(width: 16),
             Expanded(

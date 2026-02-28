@@ -4,12 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../../core/constants/app_assets.dart';
+import '../../../core/analytics/app_analytics.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../shared/widgets/gradient_background.dart';
-import '../../../shared/widgets/svg_icon.dart';
-import '../../../core/constants/app_durations.dart';
 import '../../../core/locale/locale_provider.dart';
 import '../../../core/providers/default_duration_provider.dart';
 import '../../../data/local/database_service.dart';
@@ -31,6 +28,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    AppAnalytics.logScreenView(screenName: AppAnalytics.screenSettings);
     _loadSettings();
     _loadVersion();
   }
@@ -469,8 +467,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildDurationSetting() {
     final isCompact = MediaQuery.of(context).size.width < 380;
     final padding = isCompact ? 20.0 : 28.0;
-    final titleSize = isCompact ? 24.0 : 28.0;
-    final subtitleSize = isCompact ? 18.0 : 22.0;
 
     return Padding(
       padding: EdgeInsets.all(padding),

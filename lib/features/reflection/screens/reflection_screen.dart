@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/analytics/app_analytics.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
@@ -36,6 +37,7 @@ class _ReflectionScreenState extends State<ReflectionScreen> {
   @override
   void initState() {
     super.initState();
+    AppAnalytics.logScreenView(screenName: AppAnalytics.screenReflection);
   }
 
   @override

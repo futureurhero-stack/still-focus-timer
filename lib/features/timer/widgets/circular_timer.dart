@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 
 /// Still Focus Timer - 산뜻한 원형 타이머 (샘플 스타일)
 class CircularTimer extends StatelessWidget {
@@ -37,7 +36,7 @@ class CircularTimer extends StatelessWidget {
               size: const Size(320, 320),
               painter: _CircularProgressPainter(
                 progress: 1.0,
-                color: progressColor.withOpacity(0.12),
+                color: progressColor.withValues(alpha:0.12),
                 strokeWidth: 16,
               ),
             ),
@@ -46,7 +45,7 @@ class CircularTimer extends StatelessWidget {
               size: const Size(320, 320),
               painter: _CircularProgressPainter(
                 progress: 1.0,
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha:0.03),
                 strokeWidth: 1,
               ),
             ),

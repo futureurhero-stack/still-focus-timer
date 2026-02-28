@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/svg_icon.dart';
 
 /// 통계 카드 위젯

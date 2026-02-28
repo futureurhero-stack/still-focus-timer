@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "217548707709",
+    "project_id": "still-focus-timer",
+    "storage_bucket": "still-focus-timer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217548707709:android:47ab46201fcd73774b9e14",
+        "android_client_info": {
+          "package_name": "com.focusflow.pomodoro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZ1wAdMySqbPhBwuLyYr4GqWrSODoITg0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
