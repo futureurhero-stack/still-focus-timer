@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/analytics/app_analytics.dart';
 import '../core/constants/app_colors.dart';
 import '../core/constants/app_strings.dart';
 import '../core/providers/default_duration_provider.dart';
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadQuoteOfTheDay();
+    AppAnalytics.logScreenView(screenName: AppAnalytics.screenHome);
   }
 
   Future<void> _loadQuoteOfTheDay() async {
@@ -80,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF121318).withOpacity(0.38),
+                      color: const Color(0xFF121318).withValues(alpha:0.38),
                       letterSpacing: 1.25,
                     ),
                   ),
@@ -216,12 +218,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _goTimer({required int duration, String? task, EmotionType? emotion}) {
+    final effectiveEmotion = emotion ?? EmotionType.good;
+    if (task == 'quick_start') {
+      AppAnalytics.logQuickStart(durationMinutes: duration);
+    } else if (task == 'start_my_routine') {
+      AppAnalytics.logStartMyRoutine(durationMinutes: duration);
+    } else if (emotion != null) {
+      AppAnalytics.logMoodSelected(emotion: emotion, durationMinutes: duration);
+    }
     context.push(
       '/timer',
       extra: <String, dynamic>{
         'duration': duration,
         'task': task,
-        'emotion': emotion ?? EmotionType.good,
+        'emotion': effectiveEmotion,
       },
     );
   }
@@ -283,7 +293,7 @@ class _QuoteBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.94),
+        color: Colors.white.withValues(alpha:0.94),
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(
@@ -310,7 +320,7 @@ class _QuoteBanner extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF121318).withOpacity(0.6),
+              color: const Color(0xFF121318).withValues(alpha:0.6),
               height: 1.3,
             ),
           ),
@@ -320,7 +330,7 @@ class _QuoteBanner extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF121318).withOpacity(0.45),
+              color: const Color(0xFF121318).withValues(alpha:0.45),
               letterSpacing: 0.3,
             ),
           ),
@@ -351,10 +361,10 @@ class _EmotionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const baseText = Color(0xFF121318);
-    final subText = baseText.withOpacity(0.58);
+    final subText = baseText.withValues(alpha:0.58);
 
-    final glowA = accent.withOpacity(0.12);
-    final glowB = accent.withOpacity(0.06);
+    final glowA = accent.withValues(alpha:0.12);
+    final glowB = accent.withValues(alpha:0.06);
 
     return Material(
       color: Colors.transparent,
@@ -372,10 +382,10 @@ class _EmotionCard extends StatelessWidget {
               ],
             ),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withOpacity(0.75), width: 1),
+            border: Border.all(color: Colors.white.withValues(alpha:0.75), width: 1),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.055),
+                color: Colors.black.withValues(alpha:0.055),
                 blurRadius: 30,
                 offset: const Offset(0, 18),
               ),
@@ -410,8 +420,8 @@ class _EmotionCard extends StatelessWidget {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [
-                        accent.withOpacity(0.78),
-                        accent.withOpacity(0.18),
+                        accent.withValues(alpha:0.78),
+                        accent.withValues(alpha:0.18),
                       ],
                     ),
                   ),
@@ -432,7 +442,7 @@ class _EmotionCard extends StatelessWidget {
                           child: Icon(
                             icon,
                             size: 34,
-                            color: baseText.withOpacity(0.90),
+                            color: baseText.withValues(alpha:0.90),
                           ),
                         ),
                         const Spacer(),
@@ -443,7 +453,7 @@ class _EmotionCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
-                            color: accent.withOpacity(0.92),
+                            color: accent.withValues(alpha:0.92),
                             letterSpacing: 0.15,
                           ),
                         ),
@@ -505,11 +515,11 @@ class _BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.88),
-        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.06))),
+        color: Colors.white.withValues(alpha:0.88),
+        border: Border(top: BorderSide(color: Colors.black.withValues(alpha:0.06))),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.045),
+            color: Colors.black.withValues(alpha:0.045),
             blurRadius: 18,
             offset: const Offset(0, -10),
           ),
@@ -522,7 +532,7 @@ class _BottomNav extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
         selectedItemColor: const Color(0xFF121318),
-        unselectedItemColor: const Color(0xFF121318).withOpacity(0.35),
+        unselectedItemColor: const Color(0xFF121318).withValues(alpha:0.35),
         selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
         unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
         items: [
@@ -585,8 +595,8 @@ class _WavePainter extends CustomPainter {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        const Color(0xFF12A594).withOpacity(0.08),
-        const Color(0xFF12A594).withOpacity(0.02),
+        const Color(0xFF12A594).withValues(alpha:0.08),
+        const Color(0xFF12A594).withValues(alpha:0.02),
       ],
     ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
@@ -594,8 +604,8 @@ class _WavePainter extends CustomPainter {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        const Color(0xFF12A594).withOpacity(0.05),
-        const Color(0xFF12A594).withOpacity(0.01),
+        const Color(0xFF12A594).withValues(alpha:0.05),
+        const Color(0xFF12A594).withValues(alpha:0.01),
       ],
     ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 

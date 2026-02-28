@@ -3,13 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_assets.dart';
-import '../../../core/constants/app_colors.dart';
+import '../../../core/analytics/app_analytics.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../shared/widgets/svg_icon.dart';
-import '../../../core/constants/app_durations.dart';
 import '../../../data/models/emotion_type.dart';
-import '../../../shared/widgets/gradient_background.dart';
+import '../../../data/models/give_up_reason.dart';
 import '../providers/timer_provider.dart';
 import '../widgets/circular_timer.dart';
 import '../widgets/give_up_dialog.dart';
@@ -52,6 +49,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
     super.didChangeDependencies();
     if (!_isInitialized) {
       _isInitialized = true;
+      AppAnalytics.logScreenView(screenName: AppAnalytics.screenTimer);
       // 타이머 시작
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(timerProvider.notifier).start(
@@ -59,6 +57,10 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
               durationMinutes: widget.duration,
               taskDescription: widget.taskDescription,
             );
+        AppAnalytics.logSessionStart(
+          emotion: widget.emotion,
+          durationMinutes: widget.duration,
+        );
       });
     }
   }
@@ -95,7 +97,21 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
 
   void _navigateToReflection({bool isCompleted = true}) {
     final timerState = ref.read(timerProvider);
-    
+    final elapsedMinutes = timerState.elapsedSeconds ~/ 60;
+    final emotion = timerState.session?.emotion ?? widget.emotion;
+    final moodLabel = AppAnalytics.moodLabel(emotion);
+    if (isCompleted) {
+      AppAnalytics.logSessionComplete(
+        durationMinutes: timerState.totalSeconds ~/ 60,
+        mood: moodLabel,
+      );
+    } else {
+      AppAnalytics.logSessionAbandon(
+        giveUpReason: timerState.lastGiveUpReason?.name ?? GiveUpReason.other.name,
+        elapsedMinutes: elapsedMinutes,
+        mood: moodLabel,
+      );
+    }
     context.pushReplacementNamed(
       'reflection',
       extra: {
@@ -208,10 +224,10 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.black.withOpacity(0.05)),
+            border: Border.all(color: Colors.black.withValues(alpha:0.05)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha:0.04),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -299,10 +315,10 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.75), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha:0.75), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha:0.06),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -313,7 +329,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: widget.emotion.color.withOpacity(0.1),
+              color: widget.emotion.color.withValues(alpha:0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
@@ -334,7 +350,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha:0.4),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -373,14 +389,14 @@ class _TimerScreenState extends ConsumerState<TimerScreen>
               boxShadow: [
                 BoxShadow(
                   color: (timerState.isPaused ? widget.emotion.color : Colors.black)
-                      .withOpacity(0.12),
+                      .withValues(alpha:0.12),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
               ],
               border: timerState.isPaused 
                   ? null 
-                  : Border.all(color: Colors.black.withOpacity(0.05)),
+                  : Border.all(color: Colors.black.withValues(alpha:0.05)),
             ),
             child: Icon(
               timerState.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
@@ -441,8 +457,8 @@ class _WavePainter extends CustomPainter {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        const Color(0xFF12A594).withOpacity(0.05),
-        const Color(0xFF12A594).withOpacity(0.01),
+        const Color(0xFF12A594).withValues(alpha:0.05),
+        const Color(0xFF12A594).withValues(alpha:0.01),
       ],
     ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 

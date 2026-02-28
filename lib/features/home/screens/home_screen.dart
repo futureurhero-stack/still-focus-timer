@@ -96,7 +96,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   end: Alignment.bottomCenter,
                   colors: [
                     const Color(0xFFFDFCFB),
-                    const Color(0xFFF5F2EF).withOpacity(0.5),
+                    const Color(0xFFF5F2EF).withValues(alpha:0.5),
                   ],
                 ),
               ),
@@ -148,7 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha:0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -177,7 +177,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.black.withOpacity(0.05)),
+            border: Border.all(color: Colors.black.withValues(alpha:0.05)),
           ),
           child: const Icon(Icons.notifications_none_rounded, size: 20, color: Color(0xFF6B7280)),
         ),
@@ -205,7 +205,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: const Color(0xFF111827).withOpacity(0.5),
+            color: const Color(0xFF111827).withValues(alpha:0.5),
           ),
         ),
       ],
@@ -258,7 +258,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF111827).withOpacity(0.2),
+            color: const Color(0xFF111827).withValues(alpha:0.2),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -371,12 +371,12 @@ class _PremiumMoodCardState extends State<_PremiumMoodCard> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-              color: widget.isSelected ? widget.data.iconColor.withOpacity(0.5) : Colors.transparent,
+              color: widget.isSelected ? widget.data.iconColor.withValues(alpha:0.5) : Colors.transparent,
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(_isPressed 
+                color: Colors.black.withValues(alpha:_isPressed 
                     ? 0.02 
                     : (widget.isSelected ? 0.08 : 0.04)),
                 blurRadius: _isPressed ? 10 : (widget.isSelected ? 30 : 20),
@@ -397,7 +397,7 @@ class _PremiumMoodCardState extends State<_PremiumMoodCard> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF111827).withOpacity(0.4),
+                      color: const Color(0xFF111827).withValues(alpha:0.4),
                     ),
                   ),
                 ],
@@ -418,7 +418,7 @@ class _PremiumMoodCardState extends State<_PremiumMoodCard> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF111827).withOpacity(0.4),
+                  color: const Color(0xFF111827).withValues(alpha:0.4),
                 ),
               ),
             ],
@@ -454,13 +454,13 @@ class _NavItem extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected ? Colors.white.withOpacity(0.1) : Colors.transparent,
+              color: isSelected ? Colors.white.withValues(alpha:0.1) : Colors.transparent,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
               icon,
               size: 24,
-              color: isSelected ? Colors.white : Colors.white.withOpacity(0.4),
+              color: isSelected ? Colors.white : Colors.white.withValues(alpha:0.4),
             ),
           ),
         ],

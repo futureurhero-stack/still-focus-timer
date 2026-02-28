@@ -6,6 +6,7 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 // 키스토어 설정 파일 읽기
@@ -71,4 +72,8 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // Firebase BoM — 호환되는 Firebase 라이브러리 버전 관리
+    implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
+    // Firebase Analytics
+    implementation("com.google.firebase:firebase-analytics")
 }

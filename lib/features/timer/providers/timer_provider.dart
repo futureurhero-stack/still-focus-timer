@@ -23,6 +23,8 @@ class TimerState {
   final int elapsedSeconds;
   final SessionModel? session;
   final String? errorMessage;
+  /// 포기 시 선택한 이유 (Analytics용)
+  final GiveUpReason? lastGiveUpReason;
 
   const TimerState({
     this.status = TimerStatus.initial,
@@ -31,6 +33,7 @@ class TimerState {
     this.elapsedSeconds = 0,
     this.session,
     this.errorMessage,
+    this.lastGiveUpReason,
   });
 
   /// 진행률 (0.0 ~ 1.0)
@@ -55,6 +58,7 @@ class TimerState {
     int? elapsedSeconds,
     SessionModel? session,
     String? errorMessage,
+    GiveUpReason? lastGiveUpReason,
   }) {
     return TimerState(
       status: status ?? this.status,
@@ -63,6 +67,7 @@ class TimerState {
       elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
       session: session ?? this.session,
       errorMessage: errorMessage ?? this.errorMessage,
+      lastGiveUpReason: lastGiveUpReason ?? this.lastGiveUpReason,
     );
   }
 }
@@ -171,7 +176,7 @@ class TimerNotifier extends StateNotifier<TimerState> {
       );
     }
 
-    state = state.copyWith(status: TimerStatus.givenUp);
+    state = state.copyWith(status: TimerStatus.givenUp, lastGiveUpReason: reason);
   }
 
   /// 집중 이탈 기록

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/analytics/app_analytics.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/constants/app_durations.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../data/repositories/analytics_repository.dart';
 import '../../../data/models/daily_stats_model.dart';
-import '../../../shared/widgets/gradient_background.dart';
 import '../widgets/stats_card.dart';
 import '../widgets/daily_story_card.dart';
 import '../widgets/weekly_chart.dart';
@@ -32,6 +31,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   void initState() {
     super.initState();
+    AppAnalytics.logScreenView(screenName: AppAnalytics.screenAnalytics);
     _loadData();
   }
 

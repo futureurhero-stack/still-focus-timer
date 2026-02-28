@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../shared/widgets/svg_icon.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../data/models/daily_stats_model.dart';
 

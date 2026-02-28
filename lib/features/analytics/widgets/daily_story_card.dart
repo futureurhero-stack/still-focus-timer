@@ -3,7 +3,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/constants/app_durations.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../data/models/daily_stats_model.dart';
 
